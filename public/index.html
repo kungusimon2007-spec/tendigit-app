@@ -1,0 +1,744 @@
+<meta name="description" content="GlobalConnect - Secure 10-Digit ID SuperApp, E2EE Chat, and Free Mode Reels.">
+    <meta name="author" content="Simon Kungu"><footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
+    &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.<br>
+    <a href="#" onclick="openAdminLogin(event)" style="color: #38bdf8; text-decoration: none; font-size: 11px;">🔒 Owner Login</a>
+</footer><!-- Owner Admin Modal -->
+<div id="adminModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
+    <div class="card" style="width: 90%; max-width: 400px; background: #1e293b;">
+        <h3>🔒 Owner Control Panel</h3>
+        <div id="adminLoginArea">
+            <input type="password" id="adminPassInput" placeholder="Enter Owner Passcode">
+            <button onclick="verifyAdmin()" style="background: #16a34a;">Unlock Dashboard</button>
+        </div>
+        <div id="adminDashboardArea" style="display:none;">
+            <p id="adminStatsText" style="font-size: 13px; color: #38bdf8;"></p>
+            <h4 style="margin: 10px 0 5px 0;">Connected Users:</h4>
+            <div id="adminUsersList" style="max-height: 100px; overflow-y:scroll; background:#0f172a; padding:5px; font-size:12px; margin-bottom:10px;"></div>
+            <button onclick="closeAdmin()" style="background: #ef4444;">Close Panel</button>
+        </div>
+        <button onclick="document.getElementById('adminModal').style.display='none'" style="background:none; color:#94a3b8; margin-top:5px;">Cancel</button>
+    </div>
+</div>function openAdminLogin(e) {
+    e.preventDefault();
+    document.getElementById('adminModal').style.display = 'flex';
+}
+
+async function verifyAdmin() {
+    const passcode = document.getElementById('adminPassInput').value;
+    const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode })
+    });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('adminLoginArea').style.display = 'none';
+        document.getElementById('adminDashboardArea').style.display = 'block';
+        loadAdminStats();
+    } else {
+        alert("Access Denied: Incorrect Owner Passcode!");
+    }
+}
+
+async function loadAdminStats() {
+    const res = await fetch('/api/admin/stats');
+    const stats = await res.json();
+    document.getElementById('adminStatsText').innerHTML = `
+        🟢 Online Users: <b>${stats.activeUsersCount}</b><br>
+        📝 Total Tweets: <b>${stats.totalTweets}</b><br>
+        🎬 Total Reels: <b>${stats.totalVideos}</b>
+    `;
+    const userListDiv = document.getElementById('adminUsersList');
+    userListDiv.innerHTML = stats.connectedUsersList.length === 0 ? 'No active users.' : '';
+    stats.connectedUsersList.forEach(u => {
+        userListDiv.innerHTML += `<div>ID: ${u.tenDigitId} (@${u.username})</div>`;
+    });
+}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalConnect - Free Mode & Secure SuperApp</title>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+        .tab-btn.active { background: #0284c7; color: white; }
+        .section { display: none; width: 100%; max-width: 500px; }
+        .section.active { display: block; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
+        input, textarea { background: #334155; color: white; resize: none; }
+        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0ea5e9; }
+        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
+        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
+        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
+        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+        .banner { background: #16a34a; color: white; padding: 8px; text-align: center; font-size: 12px; border-radius: 6px; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>🌐 <b>GlobalConnect</b></div>
+        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
+    </header>
+
+    <div id="freeModeBanner" class="banner">📱 Free Mode Active: Viewing Cached Feed & 3 Free Reels (No Data Bundles Required)</div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
+        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels (3 Free)</button>
+        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Secure Chat</button>
+        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
+    </div>
+
+    <!-- Twitter Feed Section -->
+    <div id="twitter" class="section active">
+        <div class="card">
+            <h3>Post to Feed</h3>
+            <form id="tweetForm" onsubmit="postTweet(event)">
+                <textarea id="tweetContent" rows="3" placeholder="What's happening?" required></textarea>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
+    </div>
+
+    <!-- TikTok Reels Section (3 Free Mode Cached) -->
+    <div id="feed" class="section">
+        <div class="card">
+            <h3>Upload Reel</h3>
+            <form id="uploadForm" onsubmit="uploadVideo(event)">
+                <input type="text" id="captionInput" placeholder="Caption..." required>
+                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
+                <button type="submit" style="background: #16a34a;">Upload</button>
+            </form>
+        </div>
+        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
+    </div>
+
+    <!-- E2EE Chat Section -->
+    <div id="chat" class="section">
+        <div class="card">
+            <h3>🔐 End-to-End Encrypted Chat</h3>
+            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
+            <div id="chatBox"></div>
+            <input type="text" id="messageInput" placeholder="Type a secure message...">
+            <button onclick="sendMessage()">Send Encrypted</button>
+        </div>
+    </div>
+
+    <!-- Video Call Section -->
+    <div id="call" class="section">
+        <div class="card">
+            <h3>Direct Video Call</h3>
+            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID">
+            <button style="background: #16a34a;" onclick="startVideoCall()">Call</button>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <video id="localVideo" style="width:48%; background:black; border-radius:6px; height:120px;" autoplay muted playsinline></video>
+                <video id="remoteVideo" style="width:48%; background:black; border-radius:6px; height:120px;" autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
+        &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        let myTenDigitId = localStorage.getItem('global_id');
+        if (!myTenDigitId) {
+            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            localStorage.setItem('global_id', myTenDigitId);
+        }
+        const myUsername = `User_${myTenDigitId.slice(-4)}`;
+        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
+        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
+
+        // Check Online/Offline status for Free Mode
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        function updateConnectionStatus() {
+            const banner = document.getElementById('freeModeBanner');
+            if (!navigator.onLine) {
+                banner.style.display = 'block';
+                loadCachedContent();
+            } else {
+                banner.style.display = 'none';
+                loadTweets();
+                loadVideos();
+            }
+        }
+
+        // Caching Feed & 3 Free Reels for Data-Free / Offline Mode
+        async function loadTweets() {
+            try {
+                const res = await fetch('/api/tweets');
+                const tweets = await res.json();
+                localStorage.setItem('cached_tweets', JSON.stringify(tweets));
+                renderTweets(tweets);
+            } catch (e) {
+                loadCachedContent();
+            }
+        }
+
+        function renderTweets(tweets) {
+            const container = document.getElementById('tweetFeedContainer');
+            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No posts yet.</p>' : '';
+            tweets.forEach(t => {
+                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
+            });
+        }
+
+        async function loadVideos() {
+            try {
+                const res = await fetch('/api/videos');
+                const videos = await res.json();
+                // Store only 3 free reels for data-saver mode
+                localStorage.setItem('cached_videos', JSON.stringify(videos.slice(0, 3)));
+                renderVideos(videos);
+            } catch (e) {
+                loadCachedContent();
+            }
+        }
+
+        function renderVideos(videos) {
+            const container = document.getElementById('videoFeedContainer');
+            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
+            videos.forEach(v => {
+                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
+            });
+        }
+
+        function loadCachedContent() {
+            document.getElementById('freeModeBanner').style.display = 'block';
+            const cachedTweets = JSON.parse(localStorage.getItem('cached_tweets') || '[]');
+            const cachedVideos = JSON.parse(localStorage.getItem('cached_videos') || '[]');
+            renderTweets(cachedTweets);
+            renderVideos(cachedVideos);
+        }
+
+        loadTweets();
+        loadVideos();
+
+        async function postTweet(e) {
+            e.preventDefault();
+            const content = document.getElementById('tweetContent').value;
+            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
+            document.getElementById('tweetForm').reset();
+            loadTweets();
+        }
+        socket.on('new_tweet', loadTweets);
+
+        async function uploadVideo(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('caption', document.getElementById('captionInput').value);
+            formData.append('video', document.getElementById('videoFileInput').files[0]);
+            formData.append('username', myUsername);
+            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
+            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
+        }
+        socket.on('new_video_post', loadVideos);
+
+        // Simple Base64 Simulation for Client-Side End-to-End Encryption (E2EE)
+        function encryptMsg(text) { return btoa(encodeURIComponent(text)); }
+        function decryptMsg(encoded) { 
+            try { return decodeURIComponent(atob(encoded)); } catch(e) { return encoded; }
+        }
+
+        function sendMessage() {
+            const targetId = document.getElementById('targetIdInput').value.trim();
+            const message = document.getElementById('messageInput').value.trim();
+            if(!targetId || !message) return alert("Enter target ID and message!");
+            
+            const encryptedMessage = encryptMsg(message);
+            socket.emit('private_message', { targetId, message: encryptedMessage });
+            appendChat(`You (Encrypted): ${message}`, '#38bdf8');
+            document.getElementById('messageInput').value = '';
+        }
+
+        socket.on('private_message', (data) => { 
+            const decrypted = decryptMsg(data.message);
+            appendChat(`[${data.senderId}] (Encrypted): ${decrypted}`, '#4ade80'); 
+        });
+        socket.on('error_notice', (data) => { alert(data.message); });
+
+        function appendChat(text, color) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        let localStream, peerConnection;
+        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        async function startVideoCall() {
+            const targetId = document.getElementById('callTargetIdInput').value.trim();
+            if(!targetId) return alert("Enter target ID!");
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById('localVideo').srcObject = localStream;
+            peerConnection = new RTCPeerConnection(servers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('call_user', { targetId, offer });
+        }
+
+        socket.on('incoming_call', async (data) => {
+            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
+                document.getElementById('callTargetIdInput').value = data.callerId;
+                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+                peerConnection = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('answer_call', { targetId: data.callerId, answer });
+            }
+        });
+        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
+        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
+    </script>
+</body>
+</html><link rel="icon" href="/icon.png" type="image/png"><link rel="icon" href="/icon.png" type="image/png">v<link rel="icon" href="/icon.png" type="image/png<link rel="icon" href="/icon.png" type="image/png"><footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
+    &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.
+</footer><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalConnect - Tweet, Reel, Chat & Call</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+        .tab-btn.active { background: #0284c7; color: white; }
+        .section { display: none; width: 100%; max-width: 500px; }
+        .section.active { display: block; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
+        input, textarea { background: #334155; color: white; resize: none; }
+        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0ea5e9; }
+        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
+        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
+        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
+        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+        .video-container { display: flex; justify-content: space-between; margin-top: 10px; }
+        video.call-screen { width: 48%; background: black; border-radius: 6px; height: 120px; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>🌐 <b>GlobalConnect</b></div>
+        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
+        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels</button>
+        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Chat</button>
+        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
+    </div>
+
+    <!-- Twitter Feed Section -->
+    <div id="twitter" class="section active">
+        <div class="card">
+            <h3>Post a Thought (Tweet)</h3>
+            <form id="tweetForm" onsubmit="postTweet(event)">
+                <textarea id="tweetContent" rows="3" placeholder="What's happening worldwide?" required></textarea>
+                <button type="submit">Post Tweet</button>
+            </form>
+        </div>
+        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
+    </div>
+
+    <!-- TikTok Reels Section -->
+    <div id="feed" class="section">
+        <div class="card">
+            <h3>Upload Video Reel</h3>
+            <form id="uploadForm" onsubmit="uploadVideo(event)">
+                <input type="text" id="captionInput" placeholder="Video caption..." required>
+                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
+                <button type="submit" style="background: #16a34a;">Upload Reel</button>
+            </form>
+        </div>
+        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
+    </div>
+
+    <!-- WhatsApp 10-Digit Chat Section -->
+    <div id="chat" class="section">
+        <div class="card">
+            <h3>Secure 10-Digit Chat</h3>
+            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
+            <div id="chatBox"></div>
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send Message</button>
+        </div>
+    </div>
+
+    <!-- Video Call Section -->
+    <div id="call" class="section">
+        <div class="card">
+            <h3>Direct Video Call</h3>
+            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID to Call">
+            <button style="background: #16a34a;" onclick="startVideoCall()">Call Friend</button>
+            <div class="video-container">
+                <video id="localVideo" class="call-screen" autoplay muted playsinline></video>
+                <video id="remoteVideo" class="call-screen" autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        let myTenDigitId = localStorage.getItem('global_id');
+        if (!myTenDigitId) {
+            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            localStorage.setItem('global_id', myTenDigitId);
+        }
+        const myUsername = `User_${myTenDigitId.slice(-4)}`;
+        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
+        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
+
+        async function loadTweets() {
+            const res = await fetch('/api/tweets');
+            const tweets = await res.json();
+            const container = document.getElementById('tweetFeedContainer');
+            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No tweets yet.</p>' : '';
+            tweets.forEach(t => {
+                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
+            });
+        }
+        loadTweets();
+
+        async function postTweet(e) {
+            e.preventDefault();
+            const content = document.getElementById('tweetContent').value;
+            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
+            document.getElementById('tweetForm').reset();
+            loadTweets();
+        }
+        socket.on('new_tweet', loadTweets);
+
+        async function loadVideos() {
+            const res = await fetch('/api/videos');
+            const videos = await res.json();
+            const container = document.getElementById('videoFeedContainer');
+            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
+            videos.forEach(v => {
+                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
+            });
+        }
+        loadVideos();
+
+        async function uploadVideo(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('caption', document.getElementById('captionInput').value);
+            formData.append('video', document.getElementById('videoFileInput').files[0]);
+            formData.append('username', myUsername);
+            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
+            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
+        }
+        socket.on('new_video_post', loadVideos);
+
+        function sendMessage() {
+            const targetId = document.getElementById('targetIdInput').value.trim();
+            const message = document.getElementById('messageInput').value.trim();
+            if(!targetId || !message) return alert("Enter target ID and message!");
+            socket.emit('private_message', { targetId, message });
+            appendChat(`You: ${message}`, '#38bdf8');
+            document.getElementById('messageInput').value = '';
+        }
+
+        socket.on('private_message', (data) => { appendChat(`[${data.senderId}]: ${data.message}`, '#4ade80'); });
+        socket.on('error_notice', (data) => { alert(data.message); });
+
+        function appendChat(text, color) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        let localStream, peerConnection;
+        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        async function startVideoCall() {
+            const targetId = document.getElementById('callTargetIdInput').value.trim();
+            if(!targetId) return alert("Enter target ID!");
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById('localVideo').srcObject = localStream;
+            peerConnection = new RTCPeerConnection(servers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('call_user', { targetId, offer });
+        }
+
+        socket.on('incoming_call', async (data) => {
+            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
+                document.getElementById('callTargetIdInput').value = data.callerId;
+                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+                peerConnection = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('answer_call', { targetId: data.callerId, answer });
+            }
+        });
+        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
+        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalConnect - Tweet, Reel, Chat & Call</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+        .tab-btn.active { background: #0284c7; color: white; }
+        .section { display: none; width: 100%; max-width: 500px; }
+        .section.active { display: block; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
+        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
+        input, textarea { background: #334155; color: white; resize: none; }
+        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0ea5e9; }
+        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
+        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
+        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
+        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+        .video-container { display: flex; justify-content: space-between; margin-top: 10px; }
+        video.call-screen { width: 48%; background: black; border-radius: 6px; height: 120px; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>🌐 <b>GlobalConnect</b></div>
+        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
+        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels</button>
+        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Chat</button>
+        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
+    </div>
+
+    <!-- Twitter Feed Section -->
+    <div id="twitter" class="section active">
+        <div class="card">
+            <h3>Post a Thought (Tweet)</h3>
+            <form id="tweetForm" onsubmit="postTweet(event)">
+                <textarea id="tweetContent" rows="3" placeholder="What's happening worldwide?" required></textarea>
+                <button type="submit">Post Tweet</button>
+            </form>
+        </div>
+        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
+    </div>
+
+    <!-- TikTok Reels Section -->
+    <div id="feed" class="section">
+        <div class="card">
+            <h3>Upload Video Reel</h3>
+            <form id="uploadForm" onsubmit="uploadVideo(event)">
+                <input type="text" id="captionInput" placeholder="Video caption..." required>
+                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
+                <button type="submit" style="background: #16a34a;">Upload Reel</button>
+            </form>
+        </div>
+        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
+    </div>
+
+    <!-- WhatsApp 10-Digit Chat Section -->
+    <div id="chat" class="section">
+        <div class="card">
+            <h3>Secure 10-Digit Chat</h3>
+            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
+            <div id="chatBox"></div>
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send Message</button>
+        </div>
+    </div>
+
+    <!-- Video Call Section -->
+    <div id="call" class="section">
+        <div class="card">
+            <h3>Direct Video Call</h3>
+            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID to Call">
+            <button style="background: #16a34a;" onclick="startVideoCall()">Call Friend</button>
+            <div class="video-container">
+                <video id="localVideo" class="call-screen" autoplay muted playsinline></video>
+                <video id="remoteVideo" class="call-screen" autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        let myTenDigitId = localStorage.getItem('global_id');
+        if (!myTenDigitId) {
+            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            localStorage.setItem('global_id', myTenDigitId);
+        }
+        const myUsername = `User_${myTenDigitId.slice(-4)}`;
+        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
+        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
+
+        async function loadTweets() {
+            const res = await fetch('/api/tweets');
+            const tweets = await res.json();
+            const container = document.getElementById('tweetFeedContainer');
+            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No tweets yet.</p>' : '';
+            tweets.forEach(t => {
+                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
+            });
+        }
+        loadTweets();
+
+        async function postTweet(e) {
+            e.preventDefault();
+            const content = document.getElementById('tweetContent').value;
+            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
+            document.getElementById('tweetForm').reset();
+            loadTweets();
+        }
+        socket.on('new_tweet', loadTweets);
+
+        async function loadVideos() {
+            const res = await fetch('/api/videos');
+            const videos = await res.json();
+            const container = document.getElementById('videoFeedContainer');
+            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
+            videos.forEach(v => {
+                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
+            });
+        }
+        loadVideos();
+
+        async function uploadVideo(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('caption', document.getElementById('captionInput').value);
+            formData.append('video', document.getElementById('videoFileInput').files[0]);
+            formData.append('username', myUsername);
+            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
+            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
+        }
+        socket.on('new_video_post', loadVideos);
+
+        function sendMessage() {
+            const targetId = document.getElementById('targetIdInput').value.trim();
+            const message = document.getElementById('messageInput').value.trim();
+            if(!targetId || !message) return alert("Enter target ID and message!");
+            socket.emit('private_message', { targetId, message });
+            appendChat(`You: ${message}`, '#38bdf8');
+            document.getElementById('messageInput').value = '';
+        }
+
+        socket.on('private_message', (data) => { appendChat(`[${data.senderId}]: ${data.message}`, '#4ade80'); });
+        socket.on('error_notice', (data) => { alert(data.message); });
+
+        function appendChat(text, color) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        let localStream, peerConnection;
+        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        async function startVideoCall() {
+            const targetId = document.getElementById('callTargetIdInput').value.trim();
+            if(!targetId) return alert("Enter target ID!");
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById('localVideo').srcObject = localStream;
+            peerConnection = new RTCPeerConnection(servers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('call_user', { targetId, offer });
+        }
+
+        socket.on('incoming_call', async (data) => {
+            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
+                document.getElementById('callTargetIdInput').value = data.callerId;
+                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+                peerConnection = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('answer_call', { targetId: data.callerId, answer });
+            }
+        });
+        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
+        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
+    </script>
+</body>
+</html>

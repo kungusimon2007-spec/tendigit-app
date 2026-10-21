@@ -1,0 +1,147 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Configure storage for video uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(__dirname, 'public/uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
+
+// In-memory data storage
+const activeUsers = {};
+let videoPosts = []; // TikTok Reels feed
+let tweets = [];     // Twitter text posts feed
+
+// API: Post a Tweet (Twitter Feature)
+app.post('/api/tweet', (req, res) => {
+    const { username, content } = req.body;
+    if (!content) return res.status(400).json({ error: 'Tweet content required' });
+
+    const newTweet = {
+        id: Date.now().toString(),
+        username: username || 'Anonymous',
+        content,
+        timestamp: new Date().toLocaleTimeString()
+    };
+
+    tweets.unshift(newTweet); // Add to top of feed
+    io.emit('new_tweet', newTweet); // Broadcast live to all connected gadgets
+    res.json({ success: true, tweet: newTweet });
+});
+
+// API: Get Tweets
+app.get('/api/tweets', (req, res) => {
+    res.json(tweets);
+});
+
+// API: Upload TikTok Video Reel
+app.post('/api/upload-video', upload.single('video'), (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'No video uploaded' });
+
+    const newPost = {
+        id: Date.now().toString(),
+        caption: req.body.caption || 'My Reel',
+        username: req.body.username || 'Creator',
+        videoUrl: `/uploads/${req.file.filename}`,
+        timestamp: new Date().toLocaleTimeString()
+    };
+
+    videoPosts.unshift(newPost);
+    io.emit('new_video_post', newPost);
+    res.json({ success: true, post: newPost });
+});
+
+// API: Get TikTok Videos
+app.get('/api/videos', (req, res) => {
+    res.json(videoPosts);
+});
+
+io.on('connection', (socket) => {
+    console.log(`Gadget connected: ${socket.id}`);
+
+    socket.on('register', (data) => {
+        activeUsers[socket.id] = {
+            tenDigitId: data.tenDigitId,
+            username: data.username || `User_${data.tenDigitId.slice(-4)}`
+        };
+    });
+
+    // WhatsApp-style 1-on-1 Chat
+    socket.on('private_message', (data) => {
+        const { targetId, message } = data;
+        const targetSocketId = Object.keys(activeUsers).find(
+            sId => activeUsers[sId].tenDigitId === targetId
+        );
+
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('private_message', {
+                senderId: activeUsers[socket.id]?.tenDigitId,
+                message,
+                timestamp: new Date().toLocaleTimeString()
+            });
+        } else {
+            socket.emit('error_notice', { message: `User with ID ${targetId} is offline.` });
+        }
+    });
+
+    // WebRTC Signaling for Video Calls
+    socket.on('call_user', (data) => {
+        const { targetId, offer } = data;
+        const targetSocketId = Object.keys(activeUsers).find(
+            sId => activeUsers[sId].tenDigitId === targetId
+        );
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('incoming_call', { callerId: activeUsers[socket.id]?.tenDigitId, offer });
+        }
+    });
+
+    socket.on('answer_call', (data) => {
+        const { targetId, answer } = data;
+        const targetSocketId = Object.keys(activeUsers).find(
+            sId => activeUsers[sId].tenDigitId === targetId
+        );
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('call_answered', { answer });
+        }
+    });
+
+    socket.on('ice_candidate', (data) => {
+        const { targetId, candidate } = data;
+        const targetSocketId = Object.keys(activeUsers).find(
+            sId => activeUsers[sId].tenDigitId === targetId
+        );
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('ice_candidate', { candidate });
+        }
+    });
+
+    socket.on('disconnect', () => {
+        delete activeUsers[socket.id];
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Global SuperApp running on http://localhost:${PORT}`);
+});
+
