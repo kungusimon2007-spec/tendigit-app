@@ -1,744 +1,378 @@
-<meta name="description" content="GlobalConnect - Secure 10-Digit ID SuperApp, E2EE Chat, and Free Mode Reels.">
-    <meta name="author" content="Simon Kungu"><footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
-    &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.<br>
-    <a href="#" onclick="openAdminLogin(event)" style="color: #38bdf8; text-decoration: none; font-size: 11px;">🔒 Owner Login</a>
-</footer><!-- Owner Admin Modal -->
-<div id="adminModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
-    <div class="card" style="width: 90%; max-width: 400px; background: #1e293b;">
-        <h3>🔒 Owner Control Panel</h3>
-        <div id="adminLoginArea">
-            <input type="password" id="adminPassInput" placeholder="Enter Owner Passcode">
-            <button onclick="verifyAdmin()" style="background: #16a34a;">Unlock Dashboard</button>
-        </div>
-        <div id="adminDashboardArea" style="display:none;">
-            <p id="adminStatsText" style="font-size: 13px; color: #38bdf8;"></p>
-            <h4 style="margin: 10px 0 5px 0;">Connected Users:</h4>
-            <div id="adminUsersList" style="max-height: 100px; overflow-y:scroll; background:#0f172a; padding:5px; font-size:12px; margin-bottom:10px;"></div>
-            <button onclick="closeAdmin()" style="background: #ef4444;">Close Panel</button>
-        </div>
-        <button onclick="document.getElementById('adminModal').style.display='none'" style="background:none; color:#94a3b8; margin-top:5px;">Cancel</button>
-    </div>
-</div>function openAdminLogin(e) {
-    e.preventDefault();
-    document.getElementById('adminModal').style.display = 'flex';
-}
-
-async function verifyAdmin() {
-    const passcode = document.getElementById('adminPassInput').value;
-    const res = await fetch('/api/admin/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passcode })
-    });
-    const data = await res.json();
-    if (data.success) {
-        document.getElementById('adminLoginArea').style.display = 'none';
-        document.getElementById('adminDashboardArea').style.display = 'block';
-        loadAdminStats();
-    } else {
-        alert("Access Denied: Incorrect Owner Passcode!");
-    }
-}
-
-async function loadAdminStats() {
-    const res = await fetch('/api/admin/stats');
-    const stats = await res.json();
-    document.getElementById('adminStatsText').innerHTML = `
-        🟢 Online Users: <b>${stats.activeUsersCount}</b><br>
-        📝 Total Tweets: <b>${stats.totalTweets}</b><br>
-        🎬 Total Reels: <b>${stats.totalVideos}</b>
-    `;
-    const userListDiv = document.getElementById('adminUsersList');
-    userListDiv.innerHTML = stats.connectedUsersList.length === 0 ? 'No active users.' : '';
-    stats.connectedUsersList.forEach(u => {
-        userListDiv.innerHTML += `<div>ID: ${u.tenDigitId} (@${u.username})</div>`;
-    });
-}<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlobalConnect - Free Mode & Secure SuperApp</title>
-    <link rel="icon" href="/icon.png" type="image/png">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
-        .tab-btn.active { background: #0284c7; color: white; }
-        .section { display: none; width: 100%; max-width: 500px; }
-        .section.active { display: block; }
-        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
-        input, textarea { background: #334155; color: white; resize: none; }
-        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0ea5e9; }
-        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
-        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
-        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
-        .banner { background: #16a34a; color: white; padding: 8px; text-align: center; font-size: 12px; border-radius: 6px; margin-bottom: 10px; display: none; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div>🌐 <b>GlobalConnect</b></div>
-        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
-    </header>
-
-    <div id="freeModeBanner" class="banner">📱 Free Mode Active: Viewing Cached Feed & 3 Free Reels (No Data Bundles Required)</div>
-
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
-        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels (3 Free)</button>
-        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Secure Chat</button>
-        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
-    </div>
-
-    <!-- Twitter Feed Section -->
-    <div id="twitter" class="section active">
-        <div class="card">
-            <h3>Post to Feed</h3>
-            <form id="tweetForm" onsubmit="postTweet(event)">
-                <textarea id="tweetContent" rows="3" placeholder="What's happening?" required></textarea>
-                <button type="submit">Post</button>
-            </form>
-        </div>
-        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
-    </div>
-
-    <!-- TikTok Reels Section (3 Free Mode Cached) -->
-    <div id="feed" class="section">
-        <div class="card">
-            <h3>Upload Reel</h3>
-            <form id="uploadForm" onsubmit="uploadVideo(event)">
-                <input type="text" id="captionInput" placeholder="Caption..." required>
-                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
-                <button type="submit" style="background: #16a34a;">Upload</button>
-            </form>
-        </div>
-        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
-    </div>
-
-    <!-- E2EE Chat Section -->
-    <div id="chat" class="section">
-        <div class="card">
-            <h3>🔐 End-to-End Encrypted Chat</h3>
-            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
-            <div id="chatBox"></div>
-            <input type="text" id="messageInput" placeholder="Type a secure message...">
-            <button onclick="sendMessage()">Send Encrypted</button>
-        </div>
-    </div>
-
-    <!-- Video Call Section -->
-    <div id="call" class="section">
-        <div class="card">
-            <h3>Direct Video Call</h3>
-            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID">
-            <button style="background: #16a34a;" onclick="startVideoCall()">Call</button>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                <video id="localVideo" style="width:48%; background:black; border-radius:6px; height:120px;" autoplay muted playsinline></video>
-                <video id="remoteVideo" style="width:48%; background:black; border-radius:6px; height:120px;" autoplay playsinline></video>
-            </div>
-        </div>
-    </div>
-
-    <footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
-        &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.
-    </footer>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        let myTenDigitId = localStorage.getItem('global_id');
-        if (!myTenDigitId) {
-            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-            localStorage.setItem('global_id', myTenDigitId);
-        }
-        const myUsername = `User_${myTenDigitId.slice(-4)}`;
-        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
-        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
-
-        // Check Online/Offline status for Free Mode
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-        function updateConnectionStatus() {
-            const banner = document.getElementById('freeModeBanner');
-            if (!navigator.onLine) {
-                banner.style.display = 'block';
-                loadCachedContent();
-            } else {
-                banner.style.display = 'none';
-                loadTweets();
-                loadVideos();
-            }
-        }
-
-        // Caching Feed & 3 Free Reels for Data-Free / Offline Mode
-        async function loadTweets() {
-            try {
-                const res = await fetch('/api/tweets');
-                const tweets = await res.json();
-                localStorage.setItem('cached_tweets', JSON.stringify(tweets));
-                renderTweets(tweets);
-            } catch (e) {
-                loadCachedContent();
-            }
-        }
-
-        function renderTweets(tweets) {
-            const container = document.getElementById('tweetFeedContainer');
-            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No posts yet.</p>' : '';
-            tweets.forEach(t => {
-                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
-            });
-        }
-
-        async function loadVideos() {
-            try {
-                const res = await fetch('/api/videos');
-                const videos = await res.json();
-                // Store only 3 free reels for data-saver mode
-                localStorage.setItem('cached_videos', JSON.stringify(videos.slice(0, 3)));
-                renderVideos(videos);
-            } catch (e) {
-                loadCachedContent();
-            }
-        }
-
-        function renderVideos(videos) {
-            const container = document.getElementById('videoFeedContainer');
-            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
-            videos.forEach(v => {
-                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
-            });
-        }
-
-        function loadCachedContent() {
-            document.getElementById('freeModeBanner').style.display = 'block';
-            const cachedTweets = JSON.parse(localStorage.getItem('cached_tweets') || '[]');
-            const cachedVideos = JSON.parse(localStorage.getItem('cached_videos') || '[]');
-            renderTweets(cachedTweets);
-            renderVideos(cachedVideos);
-        }
-
-        loadTweets();
-        loadVideos();
-
-        async function postTweet(e) {
-            e.preventDefault();
-            const content = document.getElementById('tweetContent').value;
-            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
-            document.getElementById('tweetForm').reset();
-            loadTweets();
-        }
-        socket.on('new_tweet', loadTweets);
-
-        async function uploadVideo(e) {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('caption', document.getElementById('captionInput').value);
-            formData.append('video', document.getElementById('videoFileInput').files[0]);
-            formData.append('username', myUsername);
-            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
-            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
-        }
-        socket.on('new_video_post', loadVideos);
-
-        // Simple Base64 Simulation for Client-Side End-to-End Encryption (E2EE)
-        function encryptMsg(text) { return btoa(encodeURIComponent(text)); }
-        function decryptMsg(encoded) { 
-            try { return decodeURIComponent(atob(encoded)); } catch(e) { return encoded; }
-        }
-
-        function sendMessage() {
-            const targetId = document.getElementById('targetIdInput').value.trim();
-            const message = document.getElementById('messageInput').value.trim();
-            if(!targetId || !message) return alert("Enter target ID and message!");
-            
-            const encryptedMessage = encryptMsg(message);
-            socket.emit('private_message', { targetId, message: encryptedMessage });
-            appendChat(`You (Encrypted): ${message}`, '#38bdf8');
-            document.getElementById('messageInput').value = '';
-        }
-
-        socket.on('private_message', (data) => { 
-            const decrypted = decryptMsg(data.message);
-            appendChat(`[${data.senderId}] (Encrypted): ${decrypted}`, '#4ade80'); 
-        });
-        socket.on('error_notice', (data) => { alert(data.message); });
-
-        function appendChat(text, color) {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        let localStream, peerConnection;
-        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-        async function startVideoCall() {
-            const targetId = document.getElementById('callTargetIdInput').value.trim();
-            if(!targetId) return alert("Enter target ID!");
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            document.getElementById('localVideo').srcObject = localStream;
-            peerConnection = new RTCPeerConnection(servers);
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('call_user', { targetId, offer });
-        }
-
-        socket.on('incoming_call', async (data) => {
-            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
-                document.getElementById('callTargetIdInput').value = data.callerId;
-                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('localVideo').srcObject = localStream;
-                peerConnection = new RTCPeerConnection(servers);
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                socket.emit('answer_call', { targetId: data.callerId, answer });
-            }
-        });
-        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
-        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
-    </script>
-</body>
-</html><link rel="icon" href="/icon.png" type="image/png"><link rel="icon" href="/icon.png" type="image/png">v<link rel="icon" href="/icon.png" type="image/png<link rel="icon" href="/icon.png" type="image/png"><footer style="text-align:center; color:#64748b; font-size:12px; margin: 20px 0;">
-    &copy; 2026 Simon Kungu. All rights reserved. Powered by TenDigit Infrastructure.
-</footer><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlobalConnect - Tweet, Reel, Chat & Call</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
-        .tab-btn.active { background: #0284c7; color: white; }
-        .section { display: none; width: 100%; max-width: 500px; }
-        .section.active { display: block; }
-        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
-        input, textarea { background: #334155; color: white; resize: none; }
-        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0ea5e9; }
-        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
-        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
-        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
-        .video-container { display: flex; justify-content: space-between; margin-top: 10px; }
-        video.call-screen { width: 48%; background: black; border-radius: 6px; height: 120px; object-fit: cover; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div>🌐 <b>GlobalConnect</b></div>
-        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
-    </header>
-
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
-        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels</button>
-        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Chat</button>
-        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
-    </div>
-
-    <!-- Twitter Feed Section -->
-    <div id="twitter" class="section active">
-        <div class="card">
-            <h3>Post a Thought (Tweet)</h3>
-            <form id="tweetForm" onsubmit="postTweet(event)">
-                <textarea id="tweetContent" rows="3" placeholder="What's happening worldwide?" required></textarea>
-                <button type="submit">Post Tweet</button>
-            </form>
-        </div>
-        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
-    </div>
-
-    <!-- TikTok Reels Section -->
-    <div id="feed" class="section">
-        <div class="card">
-            <h3>Upload Video Reel</h3>
-            <form id="uploadForm" onsubmit="uploadVideo(event)">
-                <input type="text" id="captionInput" placeholder="Video caption..." required>
-                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
-                <button type="submit" style="background: #16a34a;">Upload Reel</button>
-            </form>
-        </div>
-        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
-    </div>
-
-    <!-- WhatsApp 10-Digit Chat Section -->
-    <div id="chat" class="section">
-        <div class="card">
-            <h3>Secure 10-Digit Chat</h3>
-            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
-            <div id="chatBox"></div>
-            <input type="text" id="messageInput" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send Message</button>
-        </div>
-    </div>
-
-    <!-- Video Call Section -->
-    <div id="call" class="section">
-        <div class="card">
-            <h3>Direct Video Call</h3>
-            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID to Call">
-            <button style="background: #16a34a;" onclick="startVideoCall()">Call Friend</button>
-            <div class="video-container">
-                <video id="localVideo" class="call-screen" autoplay muted playsinline></video>
-                <video id="remoteVideo" class="call-screen" autoplay playsinline></video>
-            </div>
-        </div>
-    </div>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        let myTenDigitId = localStorage.getItem('global_id');
-        if (!myTenDigitId) {
-            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-            localStorage.setItem('global_id', myTenDigitId);
-        }
-        const myUsername = `User_${myTenDigitId.slice(-4)}`;
-        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
-        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
-
-        async function loadTweets() {
-            const res = await fetch('/api/tweets');
-            const tweets = await res.json();
-            const container = document.getElementById('tweetFeedContainer');
-            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No tweets yet.</p>' : '';
-            tweets.forEach(t => {
-                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
-            });
-        }
-        loadTweets();
-
-        async function postTweet(e) {
-            e.preventDefault();
-            const content = document.getElementById('tweetContent').value;
-            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
-            document.getElementById('tweetForm').reset();
-            loadTweets();
-        }
-        socket.on('new_tweet', loadTweets);
-
-        async function loadVideos() {
-            const res = await fetch('/api/videos');
-            const videos = await res.json();
-            const container = document.getElementById('videoFeedContainer');
-            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
-            videos.forEach(v => {
-                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
-            });
-        }
-        loadVideos();
-
-        async function uploadVideo(e) {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('caption', document.getElementById('captionInput').value);
-            formData.append('video', document.getElementById('videoFileInput').files[0]);
-            formData.append('username', myUsername);
-            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
-            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
-        }
-        socket.on('new_video_post', loadVideos);
-
-        function sendMessage() {
-            const targetId = document.getElementById('targetIdInput').value.trim();
-            const message = document.getElementById('messageInput').value.trim();
-            if(!targetId || !message) return alert("Enter target ID and message!");
-            socket.emit('private_message', { targetId, message });
-            appendChat(`You: ${message}`, '#38bdf8');
-            document.getElementById('messageInput').value = '';
-        }
-
-        socket.on('private_message', (data) => { appendChat(`[${data.senderId}]: ${data.message}`, '#4ade80'); });
-        socket.on('error_notice', (data) => { alert(data.message); });
-
-        function appendChat(text, color) {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        let localStream, peerConnection;
-        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-        async function startVideoCall() {
-            const targetId = document.getElementById('callTargetIdInput').value.trim();
-            if(!targetId) return alert("Enter target ID!");
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            document.getElementById('localVideo').srcObject = localStream;
-            peerConnection = new RTCPeerConnection(servers);
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('call_user', { targetId, offer });
-        }
-
-        socket.on('incoming_call', async (data) => {
-            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
-                document.getElementById('callTargetIdInput').value = data.callerId;
-                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('localVideo').srcObject = localStream;
-                peerConnection = new RTCPeerConnection(servers);
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                socket.emit('answer_call', { targetId: data.callerId, answer });
-            }
-        });
-        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
-        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
-    </script>
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlobalConnect - Tweet, Reel, Chat & Call</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        .nav-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 15px; background: #1e293b; border-radius: 8px; overflow: hidden; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
-        .tab-btn.active { background: #0284c7; color: white; }
-        .section { display: none; width: 100%; max-width: 500px; }
-        .section.active { display: block; }
-        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; }
-        input, textarea, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: none; font-size: 15px; box-sizing: border-box; }
-        input, textarea { background: #334155; color: white; resize: none; }
-        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0ea5e9; }
-        .post-card { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .post-header { font-size: 13px; color: #38bdf8; margin-bottom: 5px; font-weight: bold; }
-        .video-feed-card { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        .video-feed-card video { width: 100%; max-height: 350px; display: block; background: black; }
-        #chatBox { height: 180px; overflow-y: scroll; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
-        .video-container { display: flex; justify-content: space-between; margin-top: 10px; }
-        video.call-screen { width: 48%; background: black; border-radius: 6px; height: 120px; object-fit: cover; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="appTitle">Super App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f9; }
+    header { background: #0084ff; color: white; padding: 15px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 15px; }
+    header img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: white; }
+    nav { display: flex; justify-content: space-around; background: #222; flex-wrap: wrap; }
+    nav button { color: white; background: none; border: none; padding: 12px; cursor: pointer; flex: 1; font-size: 13px; min-width: 75px; }
+    nav button:hover { background: #444; }
+    .tab-content { display: none; padding: 20px; max-width: 600px; margin: auto; }
+    .active { display: block; }
+    .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, textarea { width: 100%; padding: 8px; margin: 5px 0 12px 0; box-sizing: border-box; }
+    button.action-btn { background: #0084ff; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+    img, video { max-width: 100%; border-radius: 5px; }
+    .comment-box { background: #f9f9f9; padding: 8px; margin-top: 8px; border-radius: 5px; font-size: 14px; }
+    .tx-item { padding: 6px; border-bottom: 1px solid #eee; font-size: 13px; }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div>🌐 <b>GlobalConnect</b></div>
-        <div id="myIdDisplay" style="font-size: 13px; color: #38bdf8;">ID: Loading...</div>
-    </header>
-
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('twitter', this)">🐦 Feed</button>
-        <button class="tab-btn" onclick="switchTab('feed', this)">🎬 Reels</button>
-        <button class="tab-btn" onclick="switchTab('chat', this)">💬 Chat</button>
-        <button class="tab-btn" onclick="switchTab('call', this)">📹 Call</button>
+  <header>
+    <img id="appHeaderIcon" src="/uploads/default-icon.png" alt="App Icon">
+    <div>
+      <h1 id="appHeaderName" style="margin: 0; font-size: 22px;">Super App</h1>
+      <p style="margin: 0; font-size: 12px;">WhatsApp • Facebook • Twitter • TikTok</p>
     </div>
+  </header>
 
-    <!-- Twitter Feed Section -->
-    <div id="twitter" class="section active">
-        <div class="card">
-            <h3>Post a Thought (Tweet)</h3>
-            <form id="tweetForm" onsubmit="postTweet(event)">
-                <textarea id="tweetContent" rows="3" placeholder="What's happening worldwide?" required></textarea>
-                <button type="submit">Post Tweet</button>
-            </form>
-        </div>
-        <div id="tweetFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading feed...</p></div>
+  <nav>
+    <button onclick="showTab('auth')" id="navAuth">Account</button>
+    <button onclick="showTab('feed')">Feed</button>
+    <button onclick="showTab('reels'); loadReels();">Reels 🎬</button>
+    <button onclick="showTab('search')">Search 🔍</button>
+    <button onclick="showTab('chat')">WhatsApp</button>
+    <button onclick="showTab('wallet'); loadWallet();">Wallet 💰</button>
+  </nav>
+
+  <!-- Auth Tab -->
+  <div id="auth" class="tab-content active">
+    <div class="card">
+      <h2>Register / Login</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button class="action-btn" onclick="register()">Register</button>
+      <button class="action-btn" onclick="login()" style="background:#28a745;">Login</button>
+      <p id="userInfo" style="margin-top:15px; font-weight:bold; color:green;"></p>
     </div>
+  </div>
 
-    <!-- TikTok Reels Section -->
-    <div id="feed" class="section">
-        <div class="card">
-            <h3>Upload Video Reel</h3>
-            <form id="uploadForm" onsubmit="uploadVideo(event)">
-                <input type="text" id="captionInput" placeholder="Video caption..." required>
-                <input type="file" id="videoFileInput" accept="video/*" required style="background:none; padding:5px 0;">
-                <button type="submit" style="background: #16a34a;">Upload Reel</button>
-            </form>
-        </div>
-        <div id="videoFeedContainer"><p style="text-align:center; color:#94a3b8;">Loading reels...</p></div>
+  <!-- Feed Tab -->
+  <div id="feed" class="tab-content">
+    <div class="card">
+      <h3>Create Post / Video</h3>
+      <textarea id="postContent" placeholder="What's happening? (#trending, #tech)"></textarea>
+      <input type="file" id="postMedia">
+      <button class="action-btn" onclick="createPost()">Publish</button>
     </div>
+    <div id="feedList"></div>
+  </div>
 
-    <!-- WhatsApp 10-Digit Chat Section -->
-    <div id="chat" class="section">
-        <div class="card">
-            <h3>Secure 10-Digit Chat</h3>
-            <input type="text" id="targetIdInput" placeholder="Friend's 10-Digit ID">
-            <div id="chatBox"></div>
-            <input type="text" id="messageInput" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send Message</button>
-        </div>
+  <!-- Reels Tab -->
+  <div id="reels" class="tab-content">
+    <h2>Trending Video Reels</h2>
+    <div id="reelsList"></div>
+  </div>
+
+  <!-- Search Tab -->
+  <div id="search" class="tab-content">
+    <div class="card">
+      <h2>Search Users & Creators</h2>
+      <input type="text" id="searchQuery" placeholder="Search by username or 10-digit ID..." onkeyup="searchUsers()">
+      <div id="searchResults" style="margin-top: 15px;"></div>
     </div>
+  </div>
 
-    <!-- Video Call Section -->
-    <div id="call" class="section">
+  <!-- WhatsApp Chat Tab -->
+  <div id="chat" class="tab-content">
+    <div class="card">
+      <h2>WhatsApp 10-Digit Chat</h2>
+      <input type="text" id="targetTenDigit" placeholder="Recipient 10-Digit ID">
+      <button class="action-btn" onclick="loadChatHistory()" style="background:#6c757d; margin-bottom:10px;">Load Chat History</button>
+      <div id="chatMessages" style="height: 180px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; background: #fafafa;"></div>
+      <input type="text" id="chatInput" placeholder="Type a message...">
+      <button class="action-btn" onclick="sendMessage()">Send Message</button>
+    </div>
+  </div>
+
+  <!-- Wallet Tab -->
+  <div id="wallet" class="tab-content">
+    <div class="card">
+      <h2>Creator Wallet & Earnings</h2>
+      <h3>Balance: <span id="walletBalance">$0.00</span></h3>
+      <h4 style="margin-top: 20px;">Recent Transactions</h4>
+      <div id="txList" style="max-height: 150px; overflow-y: auto; text-align: left;"></div>
+      <button class="action-btn" onclick="loadWallet()" style="margin-top: 15px;">Refresh Balance</button>
+      
+      <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+        <h3>Withdraw Earnings to M-Pesa</h3>
+        <input type="text" id="payoutName" placeholder="Full Name as on ID">
+        <input type="text" id="payoutNationalId" placeholder="National ID Number">
+        <input type="text" id="payoutMpesaPhone" placeholder="Safaricom M-Pesa Phone Number">
+        <button class="action-btn" onclick="savePayoutProfile()" style="background: #28a745;">Save M-Pesa Details</button>
+        <br><br>
+        <input type="number" id="withdrawAmount" placeholder="Amount ($) to withdraw">
+        <button class="action-btn" onclick="requestWithdrawal()" style="background: #ff9900;">Withdraw to M-Pesa 📲</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let currentUser = null;
+
+    async function loadAppInfo() {
+      const res = await fetch('/api/app/info');
+      const data = await res.json();
+      if (data.app_name) {
+        document.getElementById('appHeaderName').innerText = data.app_name;
+        document.getElementById('appTitle').innerText = data.app_name;
+      }
+      if (data.app_icon_url) {
+        document.getElementById('appHeaderIcon').src = data.app_icon_url;
+      }
+    }
+    loadAppInfo();
+
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    async function register() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        document.getElementById('userInfo').innerText = `Logged in as @${currentUser.username} | 10-Digit ID: ${currentUser.ten_digit_id}`;
+        socket.emit('join_chat', currentUser.ten_digit_id);
+        loadFeed();
+        loadWallet();
+        showTab('feed');
+      } else {
+        alert(data.error);
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        document.getElementById('userInfo').innerText = `Logged in as @${currentUser.username} | 10-Digit ID: ${currentUser.ten_digit_id}`;
+        socket.emit('join_chat', currentUser.ten_digit_id);
+        loadFeed();
+        loadWallet();
+        showTab('feed');
+      } else {
+        alert(data.error);
+      }
+    }
+
+    async function createPost() {
+      if (!currentUser) return alert('Please login first!');
+      const content = document.getElementById('postContent').value;
+      const media = document.getElementById('postMedia').files[0];
+      const formData = new FormData();
+      formData.append('user_id', currentUser.id);
+      formData.append('content', content);
+      if (media) formData.append('media', media);
+
+      await fetch('/api/posts', { method: 'POST', body: formData });
+      document.getElementById('postContent').value = '';
+      document.getElementById('postMedia').value = '';
+      loadFeed();
+    }
+
+    async function loadFeed() {
+      if (!currentUser) return;
+      const res = await fetch(`/api/feed/${currentUser.id}`);
+      const posts = await res.json();
+      document.getElementById('feedList').innerHTML = posts.map(p => `
         <div class="card">
-            <h3>Direct Video Call</h3>
-            <input type="text" id="callTargetIdInput" placeholder="Friend's 10-Digit ID to Call">
-            <button style="background: #16a34a;" onclick="startVideoCall()">Call Friend</button>
-            <div class="video-container">
-                <video id="localVideo" class="call-screen" autoplay muted playsinline></video>
-                <video id="remoteVideo" class="call-screen" autoplay playsinline></video>
+          <strong>@${p.username}</strong> <small style="color:gray;">(ID: ${p.ten_digit_id})</small>
+          <span style="float:right; font-size:12px; color:#0084ff;">📍 ${p.country}</span>
+          <p>${p.content}</p>
+          ${p.media_type === 'image' ? `<img src="${p.media_url}">` : ''}
+          ${p.media_type === 'video' ? `<video controls src="${p.media_url}"></video>` : ''}
+          
+          <div style="margin-top: 10px;">
+            <button class="action-btn" onclick="likePost(${p.id})">👍 Like (${p.likes})</button>
+            <button class="action-btn" onclick="tipCreator(${p.user_id})" style="background:#ff9900;">Tip ($2.00) 💰</button>
+          </div>
+
+          <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+            <h4>Comments</h4>
+            <div id="comments-${p.id}">
+              ${p.comments.map(c => `<div class="comment-box"><b>@${c.username}:</b> ${c.comment}</div>`).join('')}
             </div>
+            <input type="text" id="comment-input-${p.id}" placeholder="Write a comment..." style="margin-top: 5px;">
+            <button class="action-btn" onclick="addComment(${p.id})">Post Comment</button>
+          </div>
         </div>
-    </div>
+      `).join('');
+    }
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+    async function loadReels() {
+      const res = await fetch('/api/reels');
+      const reels = await res.json();
+      const container = document.getElementById('reelsList');
+      if (reels.length === 0) {
+        container.innerHTML = `<div class="card"><p>No video reels uploaded yet.</p></div>`;
+        return;
+      }
+      container.innerHTML = reels.map(r => `
+        <div class="card" style="text-align: center; background: #000; color: white;">
+          <strong>@${r.username}</strong>
+          <video controls src="${r.media_url}" style="max-height: 400px; width: 100%; object-fit: cover; margin-top: 10px;"></video>
+          <p style="text-align: left; margin-top: 8px;">${r.content}</p>
+          <button class="action-btn" onclick="tipCreator(${r.user_id})" style="background:#ff9900; width: 100%;">Tip Creator ($2.00) 💰</button>
+        </div>
+      `).join('');
+    }
 
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
+    async function searchUsers() {
+      const query = document.getElementById('searchQuery').value;
+      if (!query) return document.getElementById('searchResults').innerHTML = '';
+      const res = await fetch(`/api/users/search?q=${query}`);
+      const users = await res.json();
+      document.getElementById('searchResults').innerHTML = users.map(u => `
+        <div style="padding: 8px; border-bottom: 1px solid #eee;">
+          <b>@${u.username}</b> | ID: ${u.ten_digit_id} (${u.city}, ${u.country})
+          <button class="action-btn" style="float:right; padding:3px 8px; font-size:12px;" onclick="startChat('${u.ten_digit_id}')">Chat</button>
+        </div>
+      `).join('');
+    }
 
-        let myTenDigitId = localStorage.getItem('global_id');
-        if (!myTenDigitId) {
-            myTenDigitId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-            localStorage.setItem('global_id', myTenDigitId);
-        }
-        const myUsername = `User_${myTenDigitId.slice(-4)}`;
-        document.getElementById('myIdDisplay').innerText = `ID: ${myTenDigitId}`;
-        socket.emit('register', { tenDigitId: myTenDigitId, username: myUsername });
+    function startChat(tenDigitId) {
+      document.getElementById('targetTenDigit').value = tenDigitId;
+      showTab('chat');
+      loadChatHistory();
+    }
 
-        async function loadTweets() {
-            const res = await fetch('/api/tweets');
-            const tweets = await res.json();
-            const container = document.getElementById('tweetFeedContainer');
-            container.innerHTML = tweets.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No tweets yet.</p>' : '';
-            tweets.forEach(t => {
-                container.innerHTML += `<div class="post-card"><div class="post-header">@${t.username} <span style="float:right; color:#64748b;">${t.timestamp}</span></div><div>${t.content}</div></div>`;
-            });
-        }
-        loadTweets();
+    async function loadChatHistory() {
+      if (!currentUser) return alert('Please login first!');
+      const targetTenDigit = document.getElementById('targetTenDigit').value;
+      if (!targetTenDigit) return;
 
-        async function postTweet(e) {
-            e.preventDefault();
-            const content = document.getElementById('tweetContent').value;
-            await fetch('/api/tweet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: myUsername, content }) });
-            document.getElementById('tweetForm').reset();
-            loadTweets();
-        }
-        socket.on('new_tweet', loadTweets);
+      const res = await fetch(`/api/messages/${currentUser.id}/${targetTenDigit}`);
+      const msgs = await res.json();
+      const chatBox = document.getElementById('chatMessages');
+      chatBox.innerHTML = msgs.map(m => `<div><b>@${m.sender_name}:</b> ${m.message}</div>`).join('');
+    }
 
-        async function loadVideos() {
-            const res = await fetch('/api/videos');
-            const videos = await res.json();
-            const container = document.getElementById('videoFeedContainer');
-            container.innerHTML = videos.length === 0 ? '<p style="text-align:center; color:#94a3b8;">No reels yet.</p>' : '';
-            videos.forEach(v => {
-                container.innerHTML += `<div class="video-feed-card"><video src="${v.videoUrl}" controls loop playsinline></video><div style="padding:10px; background:#0f172a;"><b>@${v.username}</b><br><span>${v.caption}</span></div></div>`;
-            });
-        }
-        loadVideos();
+    async function likePost(postId) {
+      await fetch('/api/posts/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId })
+      });
+      loadFeed();
+    }
 
-        async function uploadVideo(e) {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('caption', document.getElementById('captionInput').value);
-            formData.append('video', document.getElementById('videoFileInput').files[0]);
-            formData.append('username', myUsername);
-            const res = await fetch('/api/upload-video', { method: 'POST', body: formData });
-            if(res.ok) { document.getElementById('uploadForm').reset(); alert('Reel uploaded!'); loadVideos(); }
-        }
-        socket.on('new_video_post', loadVideos);
+    async function addComment(postId) {
+      if (!currentUser) return alert('Please login first!');
+      const commentInput = document.getElementById(`comment-input-${postId}`);
+      const comment = commentInput.value;
+      if (!comment) return;
 
-        function sendMessage() {
-            const targetId = document.getElementById('targetIdInput').value.trim();
-            const message = document.getElementById('messageInput').value.trim();
-            if(!targetId || !message) return alert("Enter target ID and message!");
-            socket.emit('private_message', { targetId, message });
-            appendChat(`You: ${message}`, '#38bdf8');
-            document.getElementById('messageInput').value = '';
-        }
+      await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ post_id: postId, user_id: currentUser.id, comment })
+      });
+      loadFeed();
+    }
 
-        socket.on('private_message', (data) => { appendChat(`[${data.senderId}]: ${data.message}`, '#4ade80'); });
-        socket.on('error_notice', (data) => { alert(data.message); });
+    async function tipCreator(receiverId) {
+      if (!currentUser) return alert('Please login first!');
+      await fetch('/api/tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender_id: currentUser.id, receiver_id: receiverId, amount: 2.00 })
+      });
+      alert('Tip sent successfully!');
+      loadWallet();
+    }
 
-        function appendChat(text, color) {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">${text}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+    async function savePayoutProfile() {
+      if (!currentUser) return alert('Please login first!');
+      const fullName = document.getElementById('payoutName').value;
+      const nationalId = document.getElementById('payoutNationalId').value;
+      const mpesaPhone = document.getElementById('payoutMpesaPhone').value;
 
-        let localStream, peerConnection;
-        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+      const res = await fetch('/api/payout/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, full_name: fullName, national_id: nationalId, mpesa_phone: mpesaPhone })
+      });
+      const data = await res.json();
+      if (data.success) alert('M-Pesa Payout profile saved!');
+      else alert(data.error);
+    }
 
-        async function startVideoCall() {
-            const targetId = document.getElementById('callTargetIdInput').value.trim();
-            if(!targetId) return alert("Enter target ID!");
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            document.getElementById('localVideo').srcObject = localStream;
-            peerConnection = new RTCPeerConnection(servers);
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-            peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-            peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId, candidate: e.candidate }); };
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('call_user', { targetId, offer });
-        }
+    async function requestWithdrawal() {
+      if (!currentUser) return alert('Please login first!');
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      if (!amount || amount <= 0) return alert('Enter valid withdrawal amount');
 
-        socket.on('incoming_call', async (data) => {
-            if(confirm(`Incoming call from ID: ${data.callerId}. Accept?`)) {
-                document.getElementById('callTargetIdInput').value = data.callerId;
-                switchTab('call', document.querySelectorAll('.tab-btn')[3]);
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('localVideo').srcObject = localStream;
-                peerConnection = new RTCPeerConnection(servers);
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { targetId: data.callerId, candidate: e.candidate }); };
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                socket.emit('answer_call', { targetId: data.callerId, answer });
-            }
-        });
-        socket.on('call_answered', async (data) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
-        socket.on('ice_candidate', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
-    </script>
+      const res = await fetch('/api/payout/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, amount })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        loadWallet();
+      } else {
+        alert(data.error);
+      }
+    }
+
+    async function loadWallet() {
+      if (!currentUser) return;
+      const res = await fetch(`/api/wallet/${currentUser.id}`);
+      const data = await res.json();
+      document.getElementById('walletBalance').innerText = `$${data.balance.toFixed(2)}`;
+      
+      const txList = document.getElementById('txList');
+      txList.innerHTML = data.transactions.map(tx => `
+        <div class="tx-item">
+          <b>${tx.type}</b>: $${tx.amount.toFixed(2)} <small style="color:gray;">(${tx.description})</small>
+        </div>
+      `).join('');
+    }
+
+    function sendMessage() {
+      if (!currentUser) return alert('Please login first!');
+      const targetTenDigit = document.getElementById('targetTenDigit').value;
+      const message = document.getElementById('chatInput').value;
+      if (!targetTenDigit || !message) return alert('Enter recipient 10-digit ID and message');
+
+      socket.emit('send_message', {
+        senderId: currentUser.id,
+        receiverTenDigit: targetTenDigit,
+        message: message
+      });
+
+      const chatBox = document.getElementById('chatMessages');
+      chatBox.innerHTML += `<div><b>You:</b> ${message}</div>`;
+      document.getElementById('chatInput').value = '';
+    }
+
+    socket.on('receive_message', (data) => {
+      const chatBox = document.getElementById('chatMessages');
+      chatBox.innerHTML += `<div><b>Friend:</b> ${data.message}</div>`;
+    });
+  </script>
 </body>
 </html>
