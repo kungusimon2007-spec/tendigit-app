@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)" />
+  <!-- Connecting network lines -->
+  <line x1="160" y1="256" x2="352" y2="256" stroke="url(#accent)" stroke-width="8" opacity="0.4" stroke-dasharray="12 8" />
+  <circle cx="160" cy="256" r="16" fill="#38bdf8" />
+  <circle cx="352" cy="256" r="16" fill="#6366f1" />
+  <!-- Bold Central 'N' for Nexus -->
+  <path d="M160 340V172h48l104 116V172h48v168h-48L208 224v116h-48z" fill="#ffffff" />
+</svg>
