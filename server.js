@@ -232,7 +232,7 @@ app.post('/api/register', async (req, res) => {
 
   db.run(`INSERT INTO users (ten_digit_id, username, password, country, city) VALUES (?, ?, ?, ?, ?)`,
     [tenDigitId, username, hashedPassword, country || 'Kenya', city || 'Chuka'], function(err) {
-      if (err) return res.status(400).json({ error: 'Username already taken' });
+      if (err) return res.status(400).json({ error: err.message });
       const userId = this.lastID;
       db.run(`INSERT INTO wallets (user_id, balance) VALUES (?, 10.0)`, [userId]);
       db.run(`INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'BONUS', 10.0, 'Welcome Bonus')`, [userId]);
