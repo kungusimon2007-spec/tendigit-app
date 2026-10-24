@@ -10,7 +10,7 @@
         
         header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 20px 12px 60px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #fe2c55, #25f4ee); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(254,44,85,0.3); }
+        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #1877f2, #e1306c); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 18px; box-shadow: 0 2px 10px rgba(24,119,242,0.3); }
         h1 { font-size: 18px; font-weight: 700; color: #f8fafc; }
         .subtitle { font-size: 11px; color: #94a3b8; }
 
@@ -21,64 +21,76 @@
         .drawer-overlay.active { display: block; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
         .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 12px; border-radius: 12px; }
-        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fe2c55; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fe2c55; font-size: 20px; }
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #1877f2; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #1877f2; font-size: 20px; }
         .drawer-links { list-style: none; flex: 1; }
         .drawer-links li { margin-bottom: 12px; }
         .drawer-links a { color: #cbd5e1; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #1e293b; transition: all 0.2s; font-weight: 500; }
-        .drawer-links a:hover { background: #334155; color: #fe2c55; }
+        .drawer-links a:hover { background: #334155; color: #1877f2; }
 
         .tabs-bar { display: flex; background: #0f172a; border-bottom: 1px solid #1e293b; overflow-x: auto; scrollbar-width: none; }
         .tabs-bar::-webkit-scrollbar { display: none; }
         .tab-btn { flex: 1; padding: 14px 16px; background: none; border: none; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; white-space: nowrap; transition: all 0.2s; }
-        .tab-btn.active { color: #fe2c55; border-bottom: 2px solid #fe2c55; background: rgba(254, 44, 85, 0.05); }
+        .tab-btn.active { color: #1877f2; border-bottom: 2px solid #1877f2; background: rgba(24, 119, 242, 0.05); }
 
         .main-container { max-width: 600px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
         .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         
-        /* Facebook/TikTok Profile Card */
+        /* Facebook/Instagram Post Creation Card */
+        .create-post-box { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; margin-bottom: 20px; }
+        .create-post-top { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+        .create-post-input { width: 100%; background: #090d16; border: 1px solid #374151; border-radius: 20px; padding: 12px 16px; color: white; font-size: 14px; outline: none; resize: none; min-height: 50px; }
+        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1f2937; padding-top: 12px; margin-top: 8px; }
+        .post-action-btn { background: none; border: none; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; transition: background 0.2s; }
+        .post-action-btn:hover { background: #1f2937; color: #1877f2; }
+
+        /* Social Feed Post Item */
+        .social-post { background: #111827; border: 1px solid #1f2937; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+        .social-post-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+        .social-post-author { font-weight: bold; color: #f8fafc; font-size: 14px; }
+        .social-post-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
+        .social-post-text { padding: 0 16px 12px; font-size: 14px; color: #e2e8f0; line-height: 1.5; }
+        .social-post-image { width: 100%; max-height: 400px; object-fit: cover; background: #000; }
+        .social-post-footer { display: flex; justify-content: space-around; border-top: 1px solid #1f2937; border-bottom: 1px solid #1f2937; padding: 8px 0; font-size: 13px; color: #94a3b8; }
+        .social-btn { background: none; border: none; color: #94a3b8; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; transition: background 0.2s; }
+        .social-btn:hover { background: #1f2937; color: #1877f2; }
+        .social-btn.liked { color: #e1306c; }
+
+        /* Comments Section */
+        .comments-section { padding: 12px 16px; background: #0a0e17; display: none; }
+        .comments-section.open { display: block; }
+        .comment-item { font-size: 13px; color: #cbd5e1; margin-bottom: 8px; background: #161e2e; padding: 8px 12px; border-radius: 8px; }
+        .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
+
+        /* Profile Card */
         .fb-profile-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; overflow: hidden; margin-bottom: 20px; position: relative; }
-        .cover-photo-container { width: 100%; height: 140px; background: linear-gradient(135deg, #1e293b, #0369a1); position: relative; background-size: cover; background-position: center; }
+        .cover-photo-container { width: 100%; height: 140px; background: linear-gradient(135deg, #1877f2, #e1306c); position: relative; background-size: cover; background-position: center; }
         .edit-cover-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; backdrop-filter: blur(4px); }
         .profile-avatar-container { position: relative; margin-top: -50px; margin-left: 20px; width: 90px; height: 90px; display: inline-block; }
-        .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #111827; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #fe2c55; }
-        .camera-badge { position: absolute; bottom: 2px; right: 2px; background: #fe2c55; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #111827; cursor: pointer; }
+        .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #111827; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #1877f2; }
+        .camera-badge { position: absolute; bottom: 2px; right: 2px; background: #1877f2; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #111827; cursor: pointer; }
         .profile-info { padding: 15px 20px 20px; }
         .profile-name { font-size: 20px; font-weight: bold; color: #f8fafc; margin-bottom: 4px; }
         .profile-bio { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
         .profile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #cbd5e1; border-top: 1px solid #1f2937; padding-top: 10px; margin-top: 10px; }
 
-        /* TikTok Wallet Styles */
-        .wallet-balance-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 15px; }
-        .balance-amount { font-size: 32px; font-weight: bold; color: #f8fafc; margin: 5px 0; }
-        .wallet-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .wallet-stat-card { background: #1f2937; padding: 14px; border-radius: 10px; text-align: center; border: 1px solid #374151; }
-        .wallet-stat-card .label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
-        .wallet-stat-card .value { font-size: 18px; font-weight: bold; color: #fe2c55; }
-
         #auth-screen { display: flex; justify-content: center; align-items: center; height: 80vh; }
         .auth-box { width: 100%; max-width: 400px; background: #111827; border: 1px solid #1f2937; padding: 30px; border-radius: 18px; box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
-        .auth-box h2 { margin-bottom: 20px; color: #fe2c55; font-size: 24px; text-align: center; }
+        .auth-box h2 { margin-bottom: 20px; color: #1877f2; font-size: 24px; text-align: center; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
         .form-control { width: 100%; padding: 12px 14px; background: #090d16; border: 1px solid #374151; border-radius: 10px; color: white; font-size: 14px; outline: none; transition: border 0.2s; }
-        .form-control:focus { border-color: #fe2c55; }
-        .btn { width: 100%; padding: 13px; background: #fe2c55; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-        .btn:hover { background: #e0244b; }
+        .form-control:focus { border-color: #1877f2; }
+        .btn { width: 100%; padding: 13px; background: #1877f2; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        .btn:hover { background: #166fe5; }
         .btn-secondary { background: #374151; color: white; margin-top: 8px; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
         .modal.active { display: flex; }
         .modal-content { background: #111827; border: 1px solid #334155; width: 100%; max-width: 450px; border-radius: 18px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 12px; }
-        .modal-header h3 { color: #fe2c55; font-size: 18px; }
+        .modal-header h3 { color: #1877f2; font-size: 18px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
 
-        textarea.form-control { resize: vertical; min-height: 90px; }
-        .post-item { background: #1f2937; padding: 16px; border-radius: 12px; margin-top: 14px; border: 1px solid #374151; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-author { font-weight: bold; color: #fe2c55; font-size: 14px; }
-        .post-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
-        .post-content { font-size: 14px; color: #e2e8f0; line-height: 1.5; }
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
         .file-upload-input { display: none; }
@@ -88,6 +100,7 @@
 
     <input type="file" id="avatar-file-input" class="file-upload-input" accept="image/*" onchange="uploadAvatarImage(event)">
     <input type="file" id="cover-file-input" class="file-upload-input" accept="image/*" onchange="uploadCoverImage(event)">
+    <input type="file" id="post-image-input" class="file-upload-input" accept="image/*" onchange="previewPostImage(event)">
 
     <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
     <button id="hamburger-btn" onclick="toggleMenu()">☰</button>
@@ -101,13 +114,13 @@
             <div class="avatar-img" id="drawer-avatar-display">U</div>
             <div>
                 <div id="drawer-username" style="font-weight: bold; font-size: 15px; color: #f8fafc;">@user</div>
-                <div id="drawer-bio" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Creator Account</div>
+                <div id="drawer-bio" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Social Creator</div>
             </div>
         </div>
         <ul class="drawer-links">
             <li><a href="#" onclick="toggleMenu(); openProfileModal();">👤 Edit Profile & Photos</a></li>
             <li><a href="#" onclick="toggleMenu(); openSettingsModal();">⚙️ App Settings</a></li>
-            <li><a href="#" onclick="toggleMenu(); alert('NexusHub Creator Studio v3.5');">ℹ️ About NexusHub</a></li>
+            <li><a href="#" onclick="toggleMenu(); alert('NexusHub Social v4.0');">ℹ️ About NexusHub</a></li>
             <li><a href="#" onclick="logout()" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3);">🚪 Logout</a></li>
         </ul>
     </div>
@@ -117,7 +130,7 @@
             <div class="logo-icon">N</div>
             <div>
                 <h1>NexusHub</h1>
-                <div class="subtitle">Creator Tools • Feed • Live Wallet</div>
+                <div class="subtitle">Feed • Profile • Chat • Wallet</div>
             </div>
         </div>
         <div id="user-display" style="display: flex; align-items: center; gap: 8px;"></div>
@@ -146,16 +159,25 @@
             <button class="tab-btn" onclick="switchTab('wallet', event)">💰 Wallet</button>
         </div>
 
+        <!-- Feed Tab (Facebook & Instagram Style) -->
         <div id="tab-feed" class="main-container tab-content">
-            <div class="card">
-                <h3 style="margin-bottom: 12px; font-size: 16px;">Create Post</h3>
-                <textarea id="post-text" class="form-control" placeholder="What is on your mind?"></textarea>
-                <button class="btn" onclick="createPost()">Publish Post</button>
+            <div class="create-post-box">
+                <div class="create-post-top">
+                    <div class="avatar-img" id="feed-composer-avatar" style="width: 40px; height: 40px; font-size: 16px;">U</div>
+                    <textarea id="post-text" class="create-post-input" placeholder="What's on your mind?"></textarea>
+                </div>
+                <div id="post-image-preview-container" style="display:none; margin-bottom:10px; position:relative;">
+                    <img id="post-image-preview" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px;">
+                    <button onclick="clearPostImage()" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer;">&times;</button>
+                </div>
+                <div class="post-actions-bar">
+                    <button class="post-action-btn" onclick="triggerPostImageUpload()">📷 Photo/Video</button>
+                    <button class="post-action-btn" onclick="alert('Feeling/Activity selector ready!')">😊 Feeling/Activity</button>
+                    <button class="btn" style="width: 120px; margin-top: 0; padding: 8px;" onclick="createPost()">Post</button>
+                </div>
             </div>
-            <div class="card">
-                <h3 style="margin-bottom: 12px; font-size: 16px;">Community Feed</h3>
-                <div id="feed-container">Loading posts...</div>
-            </div>
+
+            <div id="feed-container"></div>
         </div>
 
         <div id="tab-profile" class="main-container tab-content hidden">
@@ -169,11 +191,11 @@
                 </div>
                 <div class="profile-info">
                     <div class="profile-name" id="profile-card-name">@user</div>
-                    <div class="profile-bio" id="profile-card-bio">Creator Account</div>
+                    <div class="profile-bio" id="profile-card-bio">Social Creator</div>
                     <button class="btn btn-secondary" style="margin-bottom: 10px;" onclick="openProfileModal()">✏️ Edit Profile Details</button>
                     <div class="profile-details">
-                        <div id="profile-card-work">💼 Creator Fund: Active</div>
-                        <div id="profile-card-location">📍 Region: Kenya / Global</div>
+                        <div id="profile-card-work">💼 Works at: NexusHub Creator Studio</div>
+                        <div id="profile-card-location">📍 Lives in: Nairobi, Kenya</div>
                     </div>
                 </div>
             </div>
@@ -192,50 +214,22 @@
 
         <div id="tab-wallet" class="main-container tab-content hidden">
             <div class="card">
-                <h3 style="margin-bottom: 15px; color: #fe2c55;">TikTok Creator Wallet</h3>
-                <div class="wallet-balance-box">
-                    <div class="label" style="font-size:13px; color:#94a3b8;">Available Balance</div>
-                    <div class="balance-amount" id="wallet-usd-balance">$48.50</div>
-                    <div style="font-size: 12px; color: #10b981;">Ready for withdrawal</div>
-                </div>
-                <div class="wallet-stats-grid">
-                    <div class="wallet-stat-card">
-                        <div class="label">💎 Diamonds</div>
-                        <div class="value" id="wallet-diamonds">2,425</div>
-                    </div>
-                    <div class="wallet-stat-card">
-                        <div class="label">🪙 Coin Balance</div>
-                        <div class="value" id="wallet-coins">350</div>
-                    </div>
-                </div>
-                <div class="flex-row" style="margin-bottom: 15px;">
-                    <button class="btn" onclick="openWalletModal('withdraw')">Withdraw Funds</button>
-                    <button class="btn btn-secondary" onclick="openWalletModal('recharge')">Recharge Coins</button>
-                </div>
-                <div style="font-size: 13px; color: #94a3b8; border-top: 1px solid #1f2937; padding-top: 12px;">
-                    <b>Recent Transactions:</b>
-                    <div style="margin-top: 8px; font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
-                        <span>🎁 Live Stream Gift (Rose x5)</span>
-                        <span style="color: #10b981;">+$0.25</span>
-                    </div>
-                    <div style="margin-top: 6px; font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
-                        <span>💸 Bank Withdrawal (PayPal)</span>
-                        <span style="color: #fe2c55;">-$45.00</span>
-                    </div>
+                <h3 style="margin-bottom: 15px; color: #1877f2;">NexusWallet Balance</h3>
+                <div style="font-size: 36px; font-weight: bold; margin-bottom: 20px;">$1,250.00 <span style="font-size: 14px; color: #10b981;">USD</span></div>
+                <div class="flex-row">
+                    <button class="btn" onclick="openWalletModal('send')">Send Funds</button>
+                    <button class="btn btn-secondary" onclick="openWalletModal('receive')">Receive QR</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modals -->
     <div id="profile-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Edit Profile</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
-            </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <button class="btn" style="background:#1e293b; color:#fe2c55; margin-bottom: 8px;" onclick="triggerAvatarUpload()">📷 Change Profile Picture</button>
-                <button class="btn" style="background:#1e293b; color:#cbd5e1;" onclick="triggerCoverUpload()">🖼️ Change Cover Photo</button>
             </div>
             <div class="form-group">
                 <label>Display Username</label>
@@ -244,14 +238,6 @@
             <div class="form-group">
                 <label>Bio / Status</label>
                 <textarea id="edit-bio" class="form-control" placeholder="Tell the world about yourself..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Creator Program</label>
-                <input type="text" id="edit-work" class="form-control" placeholder="e.g. Creator Rewards Program">
-            </div>
-            <div class="form-group">
-                <label>Region / Location</label>
-                <input type="text" id="edit-location" class="form-control" placeholder="Country">
             </div>
             <button class="btn" onclick="saveProfile()">Save Changes</button>
         </div>
@@ -266,7 +252,7 @@
             <div style="margin-bottom: 15px; font-size: 14px; color: #cbd5e1;">
                 <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                     <span>Push Notifications</span>
-                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #fe2c55;">
+                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #1877f2;">
                 </label>
             </div>
             <button class="btn" onclick="closeModals()">Done</button>
@@ -286,27 +272,26 @@
 
     <script>
         let currentUser = localStorage.getItem('nexus_user') || '';
-        let currentBio = localStorage.getItem('nexus_bio') || 'Creator Account';
+        let currentBio = localStorage.getItem('nexus_bio') || 'Social Creator';
         let currentAvatar = localStorage.getItem('nexus_avatar') || '';
         let currentCover = localStorage.getItem('nexus_cover') || '';
-        let currentWork = localStorage.getItem('nexus_work') || 'Creator Fund: Active';
-        let currentLocation = localStorage.getItem('nexus_location') || 'Region: Kenya / Global';
+        let uploadedPostImage = '';
+        
+        let posts = JSON.parse(localStorage.getItem('nexus_posts') || JSON.stringify([
+            { id: 1, author: 'nexus_admin', avatar: '', text: 'Welcome to NexusHub! Explore posting photos, liking, and commenting just like Facebook and Instagram.', image: '', likes: 14, liked: false, comments: [{author: 'system', text: 'Welcome aboard!'}] }
+        ]));
 
         function checkAuth() {
             if (currentUser) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-dashboard').classList.remove('hidden');
-                
                 document.getElementById('drawer-username').innerText = '@' + currentUser;
                 document.getElementById('drawer-bio').innerText = currentBio;
                 document.getElementById('profile-card-name').innerText = '@' + currentUser;
                 document.getElementById('profile-card-bio').innerText = currentBio;
-                document.getElementById('profile-card-work').innerText = '💼 ' + currentWork;
-                document.getElementById('profile-card-location').innerText = '📍 ' + currentLocation;
-
                 updateAvatarUI();
                 updateCoverUI();
-                loadPosts();
+                renderFeed();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
                 document.getElementById('app-dashboard').classList.add('hidden');
@@ -316,16 +301,20 @@
         function updateAvatarUI() {
             const drawerAvatar = document.getElementById('drawer-avatar-display');
             const profileAvatar = document.getElementById('profile-avatar-display');
+            const composerAvatar = document.getElementById('feed-composer-avatar');
             const headerDisplay = document.getElementById('user-display');
 
             if (currentAvatar) {
-                drawerAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                profileAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                headerDisplay.innerHTML = `<img src="${currentAvatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #fe2c55;"><span style="font-size:13px; color:#fe2c55; font-weight:600;">@${currentUser}</span>`;
+                const imgHtml = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                drawerAvatar.innerHTML = imgHtml;
+                profileAvatar.innerHTML = imgHtml;
+                composerAvatar.innerHTML = imgHtml;
+                headerDisplay.innerHTML = `<img src="${currentAvatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #1877f2;"><span style="font-size:13px; color:#1877f2; font-weight:600;">@${currentUser}</span>`;
             } else {
                 drawerAvatar.innerText = currentUser.charAt(0).toUpperCase();
                 profileAvatar.innerText = currentUser.charAt(0).toUpperCase();
-                headerDisplay.innerHTML = `<span style="font-size:13px; color:#fe2c55; font-weight:600;">@${currentUser}</span>`;
+                composerAvatar.innerText = currentUser.charAt(0).toUpperCase();
+                headerDisplay.innerHTML = `<span style="font-size:13px; color:#1877f2; font-weight:600;">@${currentUser}</span>`;
             }
         }
 
@@ -338,6 +327,7 @@
 
         function triggerAvatarUpload() { document.getElementById('avatar-file-input').click(); }
         function triggerCoverUpload() { document.getElementById('cover-file-input').click(); }
+        function triggerPostImageUpload() { document.getElementById('post-image-input').click(); }
 
         function uploadAvatarImage(event) {
             const file = event.target.files[0];
@@ -363,13 +353,27 @@
             reader.readAsDataURL(file);
         }
 
+        function previewPostImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedPostImage = e.target.result;
+                document.getElementById('post-image-preview').src = uploadedPostImage;
+                document.getElementById('post-image-preview-container').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearPostImage() {
+            uploadedPostImage = '';
+            document.getElementById('post-image-preview-container').style.display = 'none';
+        }
+
         function handleAuth() {
             const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            if (!username || !password) {
-                alert('Please enter both username and password.');
-                return;
-            }
+            if (!username || !password) return alert('Enter username and password');
             currentUser = username;
             localStorage.setItem('nexus_user', currentUser);
             checkAuth();
@@ -397,16 +401,14 @@
         function openProfileModal() {
             document.getElementById('edit-username').value = currentUser;
             document.getElementById('edit-bio').value = currentBio;
-            document.getElementById('edit-work').value = currentWork;
-            document.getElementById('edit-location').value = currentLocation;
             document.getElementById('profile-modal').classList.add('active');
         }
 
         function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
 
         function openWalletModal(action) {
-            const title = action === 'withdraw' ? 'Withdraw Creator Earnings' : 'Recharge TikTok Coins';
-            const body = action === 'withdraw' ? '<p style="margin-bottom:10px;">Select payout method (PayPal / Bank Transfer):</p><input type="number" class="form-control" placeholder="Amount in USD ($)" style="margin-bottom:10px;"><button class="btn" onclick="alert(\'Withdrawal request submitted successfully!\'); closeModals();">Confirm Withdrawal</button>' : '<p style="margin-bottom:10px;">Select coin package:</p><select class="form-control" style="margin-bottom:10px;"><option>70 Coins - $0.99</option><option>350 Coins - $4.99</option><option>1400 Coins - $19.99</option></select><button class="btn" onclick="alert(\'Coins added to your balance!\'); closeModals();">Pay Now</button>';
+            const title = action === 'send' ? 'Send Funds' : 'Receive QR Code';
+            const body = action === 'send' ? '<input type="text" class="form-control" placeholder="Recipient @username" style="margin-bottom:10px;"><input type="number" class="form-control" placeholder="Amount ($ USD)">' : '<div style="text-align:center; padding:15px; background:#090d16; border-radius:10px; font-family:monospace; color:#1877f2;">NXHASH-WALLET-QR-CODE</div>';
             document.getElementById('wallet-modal-title').innerText = title;
             document.getElementById('wallet-modal-body').innerHTML = body;
             document.getElementById('wallet-modal').classList.add('active');
@@ -417,64 +419,111 @@
         function saveProfile() {
             const newName = document.getElementById('edit-username').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
-            const newWork = document.getElementById('edit-work').value.trim();
-            const newLoc = document.getElementById('edit-location').value.trim();
-
             if (!newName) return alert('Username cannot be empty');
             currentUser = newName;
-            currentBio = newBio || 'Creator Account';
-            currentWork = newWork || 'Creator Fund: Active';
-            currentLocation = newLoc || 'Region: Kenya / Global';
-
+            currentBio = newBio || 'Social Creator';
             localStorage.setItem('nexus_user', currentUser);
             localStorage.setItem('nexus_bio', currentBio);
-            localStorage.setItem('nexus_work', currentWork);
-            localStorage.setItem('nexus_location', currentLocation);
-
             checkAuth();
             closeModals();
         }
 
         function createPost() {
-            const content = document.getElementById('post-text').value.trim();
-            if (!content) return;
-            const container = document.getElementById('feed-container');
-            const newPost = document.createElement('div');
-            newPost.className = 'post-item';
+            const text = document.getElementById('post-text').value.trim();
+            if (!text && !uploadedPostImage) return alert('Write something or add a photo!');
             
-            const avatarHtml = currentAvatar 
-                ? `<img src="${currentAvatar}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">` 
-                : `<div style="width:32px; height:32px; border-radius:50%; background:#fe2c55; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${currentUser.charAt(0).toUpperCase()}</div>`;
+            const newPost = {
+                id: Date.now(),
+                author: currentUser,
+                avatar: currentAvatar,
+                text: text,
+                image: uploadedPostImage,
+                likes: 0,
+                liked: false,
+                comments: []
+            };
 
-            newPost.innerHTML = `
-                <div class="post-header">
-                    ${avatarHtml}
-                    <span class="post-author">@${currentUser}</span>
-                    <span class="post-time">Just now</span>
-                </div>
-                <div class="post-content">${content}</div>
-            `;
-            if (container.firstChild) {
-                container.insertBefore(newPost, container.firstChild);
-            } else {
-                container.innerHTML = '';
-                container.appendChild(newPost);
-            }
+            posts.unshift(newPost);
+            localStorage.setItem('nexus_posts', JSON.stringify(posts));
+            
             document.getElementById('post-text').value = '';
+            clearPostImage();
+            renderFeed();
         }
 
-        function loadPosts() {
+        function toggleLike(id) {
+            const p = posts.find(item => item.id === id);
+            if (p) {
+                if (p.liked) {
+                    p.likes--;
+                    p.liked = false;
+                } else {
+                    p.likes++;
+                    p.liked = true;
+                }
+                localStorage.setItem('nexus_posts', JSON.stringify(posts));
+                renderFeed();
+            }
+        }
+
+        function toggleComments(id) {
+            const section = document.getElementById('comments-' + id);
+            section.classList.toggle('open');
+        }
+
+        function addComment(id) {
+            const input = document.getElementById('comment-input-' + id);
+            const val = input.value.trim();
+            if (!val) return;
+            const p = posts.find(item => item.id === id);
+            if (p) {
+                p.comments.push({ author: currentUser, text: val });
+                localStorage.setItem('nexus_posts', JSON.stringify(posts));
+                renderFeed();
+            }
+        }
+
+        function renderFeed() {
             const container = document.getElementById('feed-container');
-            container.innerHTML = `
-                <div class="post-item">
-                    <div class="post-header">
-                        <div style="width:32px; height:32px; border-radius:50%; background:#fe2c55; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">N</div>
-                        <span class="post-author">@nexus_creator</span>
-                        <span class="post-time">2h ago</span>
+            container.innerHTML = '';
+            
+            posts.forEach(p => {
+                const avatarEl = p.avatar 
+                    ? `<img src="${p.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` 
+                    : `<div style="width:36px; height:36px; border-radius:50%; background:#1877f2; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${p.author.charAt(0).toUpperCase()}</div>`;
+
+                let commentsHtml = '';
+                p.comments.forEach(c => {
+                    commentsHtml += `<div class="comment-item"><b>@${c.author}:</b> ${c.text}</div>`;
+                });
+
+                const postDiv = document.createElement('div');
+                postDiv.className = 'social-post';
+                postDiv.innerHTML = `
+                    <div class="social-post-header">
+                        ${avatarEl}
+                        <div>
+                            <div class="social-post-author">@${p.author}</div>
+                            <div class="social-post-time">Just now</div>
+                        </div>
                     </div>
-                    <div class="post-content">Welcome to NexusHub! Check your Creator Wallet to track live gifts, diamonds, and coin balances.</div>
-                </div>
-            `;
+                    ${p.text ? `<div class="social-post-text">${p.text}</div>` : ''}
+                    ${p.image ? `<img src="${p.image}" class="social-post-image">` : ''}
+                    <div class="social-post-footer">
+                        <button class="social-btn ${p.liked ? 'liked' : ''}" onclick="toggleLike(${p.id})">👍 Like (${p.likes})</button>
+                        <button class="social-btn" onclick="toggleComments(${p.id})">💬 Comment (${p.comments.length})</button>
+                        <button class="social-btn" onclick="alert('Post shared successfully!')">↗️ Share</button>
+                    </div>
+                    <div id="comments-${p.id}" class="comments-section">
+                        <div id="comment-list-${p.id}">${commentsHtml || '<div style="font-size:12px; color:#94a3b8;">No comments yet. Be the first!</div>'}</div>
+                        <div class="comment-input-row">
+                            <input type="text" id="comment-input-${p.id}" class="form-control" placeholder="Write a comment..." onkeypress="if(event.key==='Enter') addComment(${p.id})">
+                            <button class="btn" style="width:70px; margin-top:0; padding:8px;" onclick="addComment(${p.id})">Send</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(postDiv);
+            });
         }
 
         function sendChatMessage() {
@@ -484,7 +533,7 @@
             const chatBox = document.getElementById('chat-messages');
             const msg = document.createElement('div');
             msg.style.cssText = "background: #1e293b; padding: 10px 14px; border-radius: 10px; max-width: 80%; align-self: flex-end;";
-            msg.innerHTML = `<b style="color:#fe2c55; font-size:12px; display:block; margin-bottom:2px;">@${currentUser}</b>${val}`;
+            msg.innerHTML = `<b style="color:#1877f2; font-size:12px; display:block; margin-bottom:2px;">@${currentUser}</b>${val}`;
             chatBox.appendChild(msg);
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
