@@ -10,7 +10,7 @@
         
         header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 20px 12px 60px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #38bdf8, #0369a1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(56,189,248,0.3); }
+        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #fe2c55, #25f4ee); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(254,44,85,0.3); }
         h1 { font-size: 18px; font-weight: 700; color: #f8fafc; }
         .subtitle { font-size: 11px; color: #94a3b8; }
 
@@ -21,53 +21,62 @@
         .drawer-overlay.active { display: block; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
         .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 12px; border-radius: 12px; }
-        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #38bdf8; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #38bdf8; font-size: 20px; }
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fe2c55; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fe2c55; font-size: 20px; }
         .drawer-links { list-style: none; flex: 1; }
         .drawer-links li { margin-bottom: 12px; }
         .drawer-links a { color: #cbd5e1; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #1e293b; transition: all 0.2s; font-weight: 500; }
-        .drawer-links a:hover { background: #334155; color: #38bdf8; }
+        .drawer-links a:hover { background: #334155; color: #fe2c55; }
 
         .tabs-bar { display: flex; background: #0f172a; border-bottom: 1px solid #1e293b; overflow-x: auto; scrollbar-width: none; }
         .tabs-bar::-webkit-scrollbar { display: none; }
         .tab-btn { flex: 1; padding: 14px 16px; background: none; border: none; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; white-space: nowrap; transition: all 0.2s; }
-        .tab-btn.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; background: rgba(56, 189, 248, 0.05); }
+        .tab-btn.active { color: #fe2c55; border-bottom: 2px solid #fe2c55; background: rgba(254, 44, 85, 0.05); }
 
         .main-container { max-width: 600px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
         .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         
+        /* Facebook/TikTok Profile Card */
         .fb-profile-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; overflow: hidden; margin-bottom: 20px; position: relative; }
         .cover-photo-container { width: 100%; height: 140px; background: linear-gradient(135deg, #1e293b, #0369a1); position: relative; background-size: cover; background-position: center; }
         .edit-cover-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; backdrop-filter: blur(4px); }
         .profile-avatar-container { position: relative; margin-top: -50px; margin-left: 20px; width: 90px; height: 90px; display: inline-block; }
-        .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #111827; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #38bdf8; }
-        .camera-badge { position: absolute; bottom: 2px; right: 2px; background: #38bdf8; color: #0f172a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #111827; cursor: pointer; }
+        .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #111827; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #fe2c55; }
+        .camera-badge { position: absolute; bottom: 2px; right: 2px; background: #fe2c55; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #111827; cursor: pointer; }
         .profile-info { padding: 15px 20px 20px; }
         .profile-name { font-size: 20px; font-weight: bold; color: #f8fafc; margin-bottom: 4px; }
         .profile-bio { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
         .profile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #cbd5e1; border-top: 1px solid #1f2937; padding-top: 10px; margin-top: 10px; }
 
+        /* TikTok Wallet Styles */
+        .wallet-balance-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .balance-amount { font-size: 32px; font-weight: bold; color: #f8fafc; margin: 5px 0; }
+        .wallet-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .wallet-stat-card { background: #1f2937; padding: 14px; border-radius: 10px; text-align: center; border: 1px solid #374151; }
+        .wallet-stat-card .label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+        .wallet-stat-card .value { font-size: 18px; font-weight: bold; color: #fe2c55; }
+
         #auth-screen { display: flex; justify-content: center; align-items: center; height: 80vh; }
         .auth-box { width: 100%; max-width: 400px; background: #111827; border: 1px solid #1f2937; padding: 30px; border-radius: 18px; box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
-        .auth-box h2 { margin-bottom: 20px; color: #38bdf8; font-size: 24px; text-align: center; }
+        .auth-box h2 { margin-bottom: 20px; color: #fe2c55; font-size: 24px; text-align: center; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
         .form-control { width: 100%; padding: 12px 14px; background: #090d16; border: 1px solid #374151; border-radius: 10px; color: white; font-size: 14px; outline: none; transition: border 0.2s; }
-        .form-control:focus { border-color: #38bdf8; }
-        .btn { width: 100%; padding: 13px; background: #38bdf8; color: #0f172a; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-        .btn:hover { background: #0ea5e9; }
+        .form-control:focus { border-color: #fe2c55; }
+        .btn { width: 100%; padding: 13px; background: #fe2c55; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        .btn:hover { background: #e0244b; }
         .btn-secondary { background: #374151; color: white; margin-top: 8px; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
         .modal.active { display: flex; }
         .modal-content { background: #111827; border: 1px solid #334155; width: 100%; max-width: 450px; border-radius: 18px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 12px; }
-        .modal-header h3 { color: #38bdf8; font-size: 18px; }
+        .modal-header h3 { color: #fe2c55; font-size: 18px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
 
         textarea.form-control { resize: vertical; min-height: 90px; }
         .post-item { background: #1f2937; padding: 16px; border-radius: 12px; margin-top: 14px; border: 1px solid #374151; }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-author { font-weight: bold; color: #38bdf8; font-size: 14px; }
+        .post-author { font-weight: bold; color: #fe2c55; font-size: 14px; }
         .post-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
         .post-content { font-size: 14px; color: #e2e8f0; line-height: 1.5; }
         .hidden { display: none !important; }
@@ -92,13 +101,13 @@
             <div class="avatar-img" id="drawer-avatar-display">U</div>
             <div>
                 <div id="drawer-username" style="font-weight: bold; font-size: 15px; color: #f8fafc;">@user</div>
-                <div id="drawer-bio" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">NexusHub Member</div>
+                <div id="drawer-bio" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Creator Account</div>
             </div>
         </div>
         <ul class="drawer-links">
             <li><a href="#" onclick="toggleMenu(); openProfileModal();">👤 Edit Profile & Photos</a></li>
             <li><a href="#" onclick="toggleMenu(); openSettingsModal();">⚙️ App Settings</a></li>
-            <li><a href="#" onclick="toggleMenu(); alert('NexusHub v3.0 - Full Social PWA');">ℹ️ About NexusHub</a></li>
+            <li><a href="#" onclick="toggleMenu(); alert('NexusHub Creator Studio v3.5');">ℹ️ About NexusHub</a></li>
             <li><a href="#" onclick="logout()" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3);">🚪 Logout</a></li>
         </ul>
     </div>
@@ -108,7 +117,7 @@
             <div class="logo-icon">N</div>
             <div>
                 <h1>NexusHub</h1>
-                <div class="subtitle">NexusChat • NexusFeed • Reels • Wallet</div>
+                <div class="subtitle">Creator Tools • Feed • Live Wallet</div>
             </div>
         </div>
         <div id="user-display" style="display: flex; align-items: center; gap: 8px;"></div>
@@ -160,11 +169,11 @@
                 </div>
                 <div class="profile-info">
                     <div class="profile-name" id="profile-card-name">@user</div>
-                    <div class="profile-bio" id="profile-card-bio">NexusHub Member</div>
+                    <div class="profile-bio" id="profile-card-bio">Creator Account</div>
                     <button class="btn btn-secondary" style="margin-bottom: 10px;" onclick="openProfileModal()">✏️ Edit Profile Details</button>
                     <div class="profile-details">
-                        <div id="profile-card-work">💼 Works at: NexusHub Creator Studio</div>
-                        <div id="profile-card-location">📍 Lives in: Nairobi, Kenya</div>
+                        <div id="profile-card-work">💼 Creator Fund: Active</div>
+                        <div id="profile-card-location">📍 Region: Kenya / Global</div>
                     </div>
                 </div>
             </div>
@@ -183,11 +192,36 @@
 
         <div id="tab-wallet" class="main-container tab-content hidden">
             <div class="card">
-                <h3 style="margin-bottom: 15px; color: #38bdf8;">NexusWallet Balance</h3>
-                <div style="font-size: 36px; font-weight: bold; margin-bottom: 20px;">$1,250.00 <span style="font-size: 14px; color: #10b981;">USD</span></div>
-                <div class="flex-row">
-                    <button class="btn" onclick="openWalletModal('send')">Send Funds</button>
-                    <button class="btn btn-secondary" onclick="openWalletModal('receive')">Receive QR</button>
+                <h3 style="margin-bottom: 15px; color: #fe2c55;">TikTok Creator Wallet</h3>
+                <div class="wallet-balance-box">
+                    <div class="label" style="font-size:13px; color:#94a3b8;">Available Balance</div>
+                    <div class="balance-amount" id="wallet-usd-balance">$48.50</div>
+                    <div style="font-size: 12px; color: #10b981;">Ready for withdrawal</div>
+                </div>
+                <div class="wallet-stats-grid">
+                    <div class="wallet-stat-card">
+                        <div class="label">💎 Diamonds</div>
+                        <div class="value" id="wallet-diamonds">2,425</div>
+                    </div>
+                    <div class="wallet-stat-card">
+                        <div class="label">🪙 Coin Balance</div>
+                        <div class="value" id="wallet-coins">350</div>
+                    </div>
+                </div>
+                <div class="flex-row" style="margin-bottom: 15px;">
+                    <button class="btn" onclick="openWalletModal('withdraw')">Withdraw Funds</button>
+                    <button class="btn btn-secondary" onclick="openWalletModal('recharge')">Recharge Coins</button>
+                </div>
+                <div style="font-size: 13px; color: #94a3b8; border-top: 1px solid #1f2937; padding-top: 12px;">
+                    <b>Recent Transactions:</b>
+                    <div style="margin-top: 8px; font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <span>🎁 Live Stream Gift (Rose x5)</span>
+                        <span style="color: #10b981;">+$0.25</span>
+                    </div>
+                    <div style="margin-top: 6px; font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <span>💸 Bank Withdrawal (PayPal)</span>
+                        <span style="color: #fe2c55;">-$45.00</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,7 +234,7 @@
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div style="text-align: center; margin-bottom: 20px;">
-                <button class="btn" style="background:#1e293b; color:#38bdf8; margin-bottom: 8px;" onclick="triggerAvatarUpload()">📷 Change Profile Picture</button>
+                <button class="btn" style="background:#1e293b; color:#fe2c55; margin-bottom: 8px;" onclick="triggerAvatarUpload()">📷 Change Profile Picture</button>
                 <button class="btn" style="background:#1e293b; color:#cbd5e1;" onclick="triggerCoverUpload()">🖼️ Change Cover Photo</button>
             </div>
             <div class="form-group">
@@ -212,12 +246,12 @@
                 <textarea id="edit-bio" class="form-control" placeholder="Tell the world about yourself..."></textarea>
             </div>
             <div class="form-group">
-                <label>Work Place</label>
-                <input type="text" id="edit-work" class="form-control" placeholder="Where do you work?">
+                <label>Creator Program</label>
+                <input type="text" id="edit-work" class="form-control" placeholder="e.g. Creator Rewards Program">
             </div>
             <div class="form-group">
-                <label>Location</label>
-                <input type="text" id="edit-location" class="form-control" placeholder="City, Country">
+                <label>Region / Location</label>
+                <input type="text" id="edit-location" class="form-control" placeholder="Country">
             </div>
             <button class="btn" onclick="saveProfile()">Save Changes</button>
         </div>
@@ -232,7 +266,7 @@
             <div style="margin-bottom: 15px; font-size: 14px; color: #cbd5e1;">
                 <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                     <span>Push Notifications</span>
-                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #38bdf8;">
+                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #fe2c55;">
                 </label>
             </div>
             <button class="btn" onclick="closeModals()">Done</button>
@@ -252,11 +286,11 @@
 
     <script>
         let currentUser = localStorage.getItem('nexus_user') || '';
-        let currentBio = localStorage.getItem('nexus_bio') || 'NexusHub Member';
+        let currentBio = localStorage.getItem('nexus_bio') || 'Creator Account';
         let currentAvatar = localStorage.getItem('nexus_avatar') || '';
         let currentCover = localStorage.getItem('nexus_cover') || '';
-        let currentWork = localStorage.getItem('nexus_work') || 'Works at: NexusHub Creator Studio';
-        let currentLocation = localStorage.getItem('nexus_location') || 'Lives in: Nairobi, Kenya';
+        let currentWork = localStorage.getItem('nexus_work') || 'Creator Fund: Active';
+        let currentLocation = localStorage.getItem('nexus_location') || 'Region: Kenya / Global';
 
         function checkAuth() {
             if (currentUser) {
@@ -287,11 +321,11 @@
             if (currentAvatar) {
                 drawerAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                 profileAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                headerDisplay.innerHTML = `<img src="${currentAvatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #38bdf8;"><span style="font-size:13px; color:#38bdf8; font-weight:600;">@${currentUser}</span>`;
+                headerDisplay.innerHTML = `<img src="${currentAvatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #fe2c55;"><span style="font-size:13px; color:#fe2c55; font-weight:600;">@${currentUser}</span>`;
             } else {
                 drawerAvatar.innerText = currentUser.charAt(0).toUpperCase();
                 profileAvatar.innerText = currentUser.charAt(0).toUpperCase();
-                headerDisplay.innerHTML = `<span style="font-size:13px; color:#38bdf8; font-weight:600;">@${currentUser}</span>`;
+                headerDisplay.innerHTML = `<span style="font-size:13px; color:#fe2c55; font-weight:600;">@${currentUser}</span>`;
             }
         }
 
@@ -371,8 +405,8 @@
         function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
 
         function openWalletModal(action) {
-            const title = action === 'send' ? 'Send Nexus Funds' : 'Receive QR Code';
-            const body = action === 'send' ? '<input type="text" class="form-control" placeholder="Recipient @username" style="margin-bottom:10px;"><input type="number" class="form-control" placeholder="Amount ($ USD)">' : '<div style="text-align:center; padding:15px; background:#090d16; border-radius:10px; font-family:monospace; color:#38bdf8;">NXHASH-WALLET-QR-CODE-994821</div>';
+            const title = action === 'withdraw' ? 'Withdraw Creator Earnings' : 'Recharge TikTok Coins';
+            const body = action === 'withdraw' ? '<p style="margin-bottom:10px;">Select payout method (PayPal / Bank Transfer):</p><input type="number" class="form-control" placeholder="Amount in USD ($)" style="margin-bottom:10px;"><button class="btn" onclick="alert(\'Withdrawal request submitted successfully!\'); closeModals();">Confirm Withdrawal</button>' : '<p style="margin-bottom:10px;">Select coin package:</p><select class="form-control" style="margin-bottom:10px;"><option>70 Coins - $0.99</option><option>350 Coins - $4.99</option><option>1400 Coins - $19.99</option></select><button class="btn" onclick="alert(\'Coins added to your balance!\'); closeModals();">Pay Now</button>';
             document.getElementById('wallet-modal-title').innerText = title;
             document.getElementById('wallet-modal-body').innerHTML = body;
             document.getElementById('wallet-modal').classList.add('active');
@@ -388,9 +422,9 @@
 
             if (!newName) return alert('Username cannot be empty');
             currentUser = newName;
-            currentBio = newBio || 'NexusHub Member';
-            currentWork = newWork || 'Works at: NexusHub Creator Studio';
-            currentLocation = newLoc || 'Lives in: Nairobi, Kenya';
+            currentBio = newBio || 'Creator Account';
+            currentWork = newWork || 'Creator Fund: Active';
+            currentLocation = newLoc || 'Region: Kenya / Global';
 
             localStorage.setItem('nexus_user', currentUser);
             localStorage.setItem('nexus_bio', currentBio);
@@ -410,7 +444,7 @@
             
             const avatarHtml = currentAvatar 
                 ? `<img src="${currentAvatar}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">` 
-                : `<div style="width:32px; height:32px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:bold;">${currentUser.charAt(0).toUpperCase()}</div>`;
+                : `<div style="width:32px; height:32px; border-radius:50%; background:#fe2c55; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${currentUser.charAt(0).toUpperCase()}</div>`;
 
             newPost.innerHTML = `
                 <div class="post-header">
@@ -434,11 +468,11 @@
             container.innerHTML = `
                 <div class="post-item">
                     <div class="post-header">
-                        <div style="width:32px; height:32px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:bold;">N</div>
-                        <span class="post-author">@nexus_admin</span>
+                        <div style="width:32px; height:32px; border-radius:50%; background:#fe2c55; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">N</div>
+                        <span class="post-author">@nexus_creator</span>
                         <span class="post-time">2h ago</span>
                     </div>
-                    <div class="post-content">Welcome to NexusHub! Upload your profile picture and cover photo to complete your profile.</div>
+                    <div class="post-content">Welcome to NexusHub! Check your Creator Wallet to track live gifts, diamonds, and coin balances.</div>
                 </div>
             `;
         }
@@ -450,7 +484,7 @@
             const chatBox = document.getElementById('chat-messages');
             const msg = document.createElement('div');
             msg.style.cssText = "background: #1e293b; padding: 10px 14px; border-radius: 10px; max-width: 80%; align-self: flex-end;";
-            msg.innerHTML = `<b style="color:#38bdf8; font-size:12px; display:block; margin-bottom:2px;">@${currentUser}</b>${val}`;
+            msg.innerHTML = `<b style="color:#fe2c55; font-size:12px; display:block; margin-bottom:2px;">@${currentUser}</b>${val}`;
             chatBox.appendChild(msg);
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
