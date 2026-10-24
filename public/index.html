@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NexusHub - Super App</title>
+    <title>NexusHub - Social App</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
@@ -42,8 +42,6 @@
         .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1f2937; padding-top: 12px; margin-top: 8px; }
         .post-action-btn { background: none; border: none; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; transition: background 0.2s; }
         .post-action-btn:hover { background: #1f2937; color: #fe2c55; }
-
-        .feeling-badge { display: inline-block; background: #1e293b; color: #fe2c55; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin-bottom: 8px; font-weight: 600; border: 1px solid #334155; }
 
         /* Social Feed Items */
         .social-post { background: #111827; border: 1px solid #1f2937; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
@@ -101,10 +99,6 @@
         .modal-header h3 { color: #fe2c55; font-size: 18px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
 
-        .feeling-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .feeling-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; font-size: 14px; cursor: pointer; text-align: left; transition: background 0.2s; }
-        .feeling-btn:hover { background: #334155; color: #fe2c55; }
-
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
         .file-upload-input { display: none; }
@@ -119,7 +113,7 @@
     <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
     <button id="hamburger-btn" onclick="toggleMenu()">☰</button>
 
-    <!-- Side Drawer Menu containing Profile & Wallet -->
+    <!-- Side Drawer Menu -->
     <div id="nexus-drawer">
         <div class="drawer-header">
             <h3>NexusHub Menu</h3>
@@ -137,7 +131,7 @@
             <li><a onclick="openDrawerTab('wallet')">💰 Creator Wallet</a></li>
             <li><a onclick="toggleMenu(); openProfileModal();">✏️ Edit Profile Details</a></li>
             <li><a onclick="toggleMenu(); openSettingsModal();">⚙️ App Settings</a></li>
-            <li><a onclick="toggleMenu(); alert('NexusHub Creator Studio v4.5');">ℹ️ About NexusHub</a></li>
+            <li><a onclick="toggleMenu(); alert('NexusHub v5.0');">ℹ️ About NexusHub</a></li>
             <li><a onclick="logout()" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3);">🚪 Logout</a></li>
         </ul>
     </div>
@@ -147,7 +141,7 @@
             <div class="logo-icon">N</div>
             <div>
                 <h1>NexusHub</h1>
-                <div class="subtitle">Creator Tools • Feed • Live Chat</div>
+                <div class="subtitle">Social Feed • Live Chat</div>
             </div>
         </div>
         <div id="user-display" style="display: flex; align-items: center; gap: 8px;"></div>
@@ -169,7 +163,7 @@
     </div>
 
     <div id="app-dashboard" class="hidden">
-        <!-- Main Top Navigation (Feed & Chat) -->
+        <!-- Main Top Navigation (Feed & Chat only) -->
         <div class="tabs-bar">
             <button class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed', event)">📰 Feed</button>
             <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">💬 Chat</button>
@@ -182,17 +176,12 @@
                     <div class="avatar-img" id="feed-composer-avatar" style="width: 40px; height: 40px; font-size: 16px;">U</div>
                     <textarea id="post-text" class="create-post-input" placeholder="What's on your mind?"></textarea>
                 </div>
-                <div id="selected-feeling-tag" style="display:none;" class="feeling-badge">
-                    <span id="feeling-tag-text"></span>
-                    <span onclick="clearFeeling()" style="margin-left:6px; cursor:pointer;">&times;</span>
-                </div>
                 <div id="post-image-preview-container" style="display:none; margin-bottom:10px; position:relative;">
                     <img id="post-image-preview" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px;">
                     <button onclick="clearPostImage()" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer;">&times;</button>
                 </div>
                 <div class="post-actions-bar">
                     <button class="post-action-btn" onclick="triggerPostImageUpload()">📷 Photo/Video</button>
-                    <button class="post-action-btn" onclick="openFeelingModal()">😊 Feeling/Activity</button>
                     <button class="btn" style="width: 120px; margin-top: 0; padding: 8px;" onclick="createPost()">Post</button>
                 </div>
             </div>
@@ -227,8 +216,8 @@
                     <div class="profile-bio" id="profile-card-bio">Creator Account</div>
                     <button class="btn btn-secondary" style="margin-bottom: 10px;" onclick="openProfileModal()">✏️ Edit Profile Details</button>
                     <div class="profile-details">
-                        <div id="profile-card-work">💼 Creator Rewards Program</div>
-                        <div id="profile-card-location">📍 Region: Kenya / Global</div>
+                        <div id="profile-card-work">💼 Creator Status: Active</div>
+                        <div id="profile-card-location">📍 Region: Global</div>
                     </div>
                 </div>
             </div>
@@ -268,23 +257,6 @@
     </div>
 
     <!-- Modals -->
-    <div id="feeling-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>How are you feeling?</h3>
-                <button class="close-modal" onclick="closeModals()">&times;</button>
-            </div>
-            <div class="feeling-grid">
-                <button class="feeling-btn" onclick="selectFeeling('😃 Feeling Happy')">😃 Happy</button>
-                <button class="feeling-btn" onclick="selectFeeling('🔥 Feeling Excited')">🔥 Excited</button>
-                <button class="feeling-btn" onclick="selectFeeling('🎧 Listening to Music')">🎧 Listening</button>
-                <button class="feeling-btn" onclick="selectFeeling('🚀 Working Hard')">🚀 Working</button>
-                <button class="feeling-btn" onclick="selectFeeling('✈️ Traveling')">✈️ Traveling</button>
-                <button class="feeling-btn" onclick="selectFeeling('☕ Relaxing')">☕ Relaxing</button>
-            </div>
-        </div>
-    </div>
-
     <div id="profile-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -336,11 +308,9 @@
         let currentAvatar = localStorage.getItem('nexus_avatar') || '';
         let currentCover = localStorage.getItem('nexus_cover') || '';
         let uploadedPostImage = '';
-        let currentFeeling = '';
 
-        let posts = JSON.parse(localStorage.getItem('nexus_posts') || JSON.stringify([
-            { id: 1, author: 'nexus_admin', avatar: '', text: 'Welcome to NexusHub! Share updates, photos, and connect with creators.', image: '', feeling: '😃 Feeling Happy', likes: 0, liked: false, comments: [] }
-        ]));
+        // Start with a truly empty feed for new users (no fake admin posts)
+        let posts = JSON.parse(localStorage.getItem('nexus_posts') || '[]');
 
         function checkAuth() {
             if (currentUser) {
@@ -431,20 +401,6 @@
             document.getElementById('post-image-preview-container').style.display = 'none';
         }
 
-        function openFeelingModal() { document.getElementById('feeling-modal').classList.add('active'); }
-
-        function selectFeeling(feeling) {
-            currentFeeling = feeling;
-            document.getElementById('feeling-tag-text').innerText = feeling;
-            document.getElementById('selected-feeling-tag').style.display = 'inline-block';
-            closeModals();
-        }
-
-        function clearFeeling() {
-            currentFeeling = '';
-            document.getElementById('selected-feeling-tag').style.display = 'none';
-        }
-
         function handleAuth() {
             const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value.trim();
@@ -514,7 +470,7 @@
 
         function createPost() {
             const text = document.getElementById('post-text').value.trim();
-            if (!text && !uploadedPostImage && !currentFeeling) return alert('Write something or add a photo/feeling!');
+            if (!text && !uploadedPostImage) return alert('Write something or add a photo!');
             
             const newPost = {
                 id: Date.now(),
@@ -522,7 +478,6 @@
                 avatar: currentAvatar,
                 text: text,
                 image: uploadedPostImage,
-                feeling: currentFeeling,
                 likes: 0,
                 liked: false,
                 comments: []
@@ -533,7 +488,6 @@
             
             document.getElementById('post-text').value = '';
             clearPostImage();
-            clearFeeling();
             renderFeed();
         }
 
@@ -573,6 +527,11 @@
             const container = document.getElementById('feed-container');
             container.innerHTML = '';
             
+            if (posts.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-size:14px; background:#111827; border-radius:14px; border:1px solid #1f2937;">No posts yet. Be the first to share something!</div>`;
+                return;
+            }
+
             posts.forEach(p => {
                 const avatarEl = p.avatar 
                     ? `<img src="${p.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` 
@@ -589,7 +548,7 @@
                     <div class="social-post-header">
                         ${avatarEl}
                         <div>
-                            <div class="social-post-author">@${p.author} ${p.feeling ? `<span style="font-size:12px; color:#94a3b8; font-weight:normal;">— ${p.feeling}</span>` : ''}</div>
+                            <div class="social-post-author">@${p.author}</div>
                             <div class="social-post-time">Just now</div>
                         </div>
                     </div>
