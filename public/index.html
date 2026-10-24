@@ -43,6 +43,8 @@
         .post-action-btn { background: none; border: none; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; transition: background 0.2s; }
         .post-action-btn:hover { background: #1f2937; color: #fe2c55; }
 
+        .feeling-badge { display: inline-block; background: #1e293b; color: #fe2c55; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin-bottom: 8px; font-weight: 600; border: 1px solid #334155; }
+
         /* Social Feed Items */
         .social-post { background: #111827; border: 1px solid #1f2937; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
         .social-post-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
@@ -99,6 +101,10 @@
         .modal-header h3 { color: #fe2c55; font-size: 18px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
 
+        .feeling-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .feeling-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; font-size: 14px; cursor: pointer; text-align: left; transition: background 0.2s; }
+        .feeling-btn:hover { background: #334155; color: #fe2c55; }
+
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
         .file-upload-input { display: none; }
@@ -128,7 +134,7 @@
         <ul class="drawer-links">
             <li><a href="#" onclick="toggleMenu(); openProfileModal();">👤 Edit Profile & Photos</a></li>
             <li><a href="#" onclick="toggleMenu(); openSettingsModal();">⚙️ App Settings</a></li>
-            <li><a href="#" onclick="toggleMenu(); alert('NexusHub Creator Studio v4.0');">ℹ️ About NexusHub</a></li>
+            <li><a href="#" onclick="toggleMenu(); alert('NexusHub Creator Studio v4.2');">ℹ️ About NexusHub</a></li>
             <li><a href="#" onclick="logout()" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3);">🚪 Logout</a></li>
         </ul>
     </div>
@@ -174,13 +180,17 @@
                     <div class="avatar-img" id="feed-composer-avatar" style="width: 40px; height: 40px; font-size: 16px;">U</div>
                     <textarea id="post-text" class="create-post-input" placeholder="What's on your mind?"></textarea>
                 </div>
+                <div id="selected-feeling-tag" style="display:none;" class="feeling-badge">
+                    <span id="feeling-tag-text"></span>
+                    <span onclick="clearFeeling()" style="margin-left:6px; cursor:pointer;">&times;</span>
+                </div>
                 <div id="post-image-preview-container" style="display:none; margin-bottom:10px; position:relative;">
                     <img id="post-image-preview" src="" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px;">
                     <button onclick="clearPostImage()" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer;">&times;</button>
                 </div>
                 <div class="post-actions-bar">
                     <button class="post-action-btn" onclick="triggerPostImageUpload()">📷 Photo/Video</button>
-                    <button class="post-action-btn" onclick="alert('Feeling/Activity selector ready!')">😊 Feeling/Activity</button>
+                    <button class="post-action-btn" onclick="openFeelingModal()">😊 Feeling/Activity</button>
                     <button class="btn" style="width: 120px; margin-top: 0; padding: 8px;" onclick="createPost()">Post</button>
                 </div>
             </div>
@@ -222,7 +232,7 @@
             </div>
         </div>
 
-        <!-- Wallet Tab (NexusHub Creator Wallet) -->
+        <!-- Wallet Tab -->
         <div id="tab-wallet" class="main-container tab-content hidden">
             <div class="card">
                 <h3 style="margin-bottom: 15px; color: #fe2c55;">NexusHub Creator Wallet</h3>
@@ -256,6 +266,23 @@
     </div>
 
     <!-- Modals -->
+    <div id="feeling-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>How are you feeling?</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="feeling-grid">
+                <button class="feeling-btn" onclick="selectFeeling('😃 Feeling Happy')">😃 Happy</button>
+                <button class="feeling-btn" onclick="selectFeeling('🔥 Feeling Excited')">🔥 Excited</button>
+                <button class="feeling-btn" onclick="selectFeeling('🎧 Listening to Music')">🎧 Listening</button>
+                <button class="feeling-btn" onclick="selectFeeling('🚀 Working Hard')">🚀 Working</button>
+                <button class="feeling-btn" onclick="selectFeeling('✈️ Traveling')">✈️ Traveling</button>
+                <button class="feeling-btn" onclick="selectFeeling('☕ Relaxing')">☕ Relaxing</button>
+            </div>
+        </div>
+    </div>
+
     <div id="profile-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -307,9 +334,13 @@
         let currentAvatar = localStorage.getItem('nexus_avatar') || '';
         let currentCover = localStorage.getItem('nexus_cover') || '';
         let uploadedPostImage = '';
+        let currentFeeling = '';
+
+        // Reset posts cleanly on first visit to eliminate fake default data
+        localStorage.removeItem('nexus_posts');
         
         let posts = JSON.parse(localStorage.getItem('nexus_posts') || JSON.stringify([
-            { id: 1, author: 'nexus_admin', avatar: '', text: 'Welcome to NexusHub! Share posts, photos, and start earning rewards.', image: '', likes: 0, liked: false, comments: [] }
+            { id: 1, author: 'nexus_admin', avatar: '', text: 'Welcome to NexusHub! Share updates, photos, and connect with creators.', image: '', feeling: '😃 Feeling Happy', likes: 0, liked: false, comments: [] }
         ]));
 
         function checkAuth() {
@@ -401,6 +432,20 @@
             document.getElementById('post-image-preview-container').style.display = 'none';
         }
 
+        function openFeelingModal() { document.getElementById('feeling-modal').classList.add('active'); }
+
+        function selectFeeling(feeling) {
+            currentFeeling = feeling;
+            document.getElementById('feeling-tag-text').innerText = feeling;
+            document.getElementById('selected-feeling-tag').style.display = 'inline-block';
+            closeModals();
+        }
+
+        function clearFeeling() {
+            currentFeeling = '';
+            document.getElementById('selected-feeling-tag').style.display = 'none';
+        }
+
         function handleAuth() {
             const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value.trim();
@@ -461,7 +506,7 @@
 
         function createPost() {
             const text = document.getElementById('post-text').value.trim();
-            if (!text && !uploadedPostImage) return alert('Write something or add a photo!');
+            if (!text && !uploadedPostImage && !currentFeeling) return alert('Write something or add a photo/feeling!');
             
             const newPost = {
                 id: Date.now(),
@@ -469,6 +514,7 @@
                 avatar: currentAvatar,
                 text: text,
                 image: uploadedPostImage,
+                feeling: currentFeeling,
                 likes: 0,
                 liked: false,
                 comments: []
@@ -479,6 +525,7 @@
             
             document.getElementById('post-text').value = '';
             clearPostImage();
+            clearFeeling();
             renderFeed();
         }
 
@@ -534,7 +581,7 @@
                     <div class="social-post-header">
                         ${avatarEl}
                         <div>
-                            <div class="social-post-author">@${p.author}</div>
+                            <div class="social-post-author">@${p.author} ${p.feeling ? `<span style="font-size:12px; color:#94a3b8; font-weight:normal;">— ${p.feeling}</span>` : ''}</div>
                             <div class="social-post-time">Just now</div>
                         </div>
                     </div>
