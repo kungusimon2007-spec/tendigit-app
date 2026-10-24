@@ -8,38 +8,44 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* Header & Branding */
         header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 20px 12px 60px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
         .logo-area { display: flex; align-items: center; gap: 10px; }
         .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #38bdf8, #0369a1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(56,189,248,0.3); }
         h1 { font-size: 18px; font-weight: 700; color: #f8fafc; }
         .subtitle { font-size: 11px; color: #94a3b8; }
 
-        /* Hamburger Menu Button & Drawer */
         #hamburger-btn { position: fixed; top: 12px; left: 15px; z-index: 1000; background: #1e293b; color: white; border: none; width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
         #nexus-drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0f172a; z-index: 1001; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 25px rgba(0,0,0,0.8); padding: 25px; border-right: 1px solid #1e293b; display: flex; flex-direction: column; }
         #nexus-drawer.open { left: 0; }
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; backdrop-filter: blur(2px); }
         .drawer-overlay.active { display: block; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
-        .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; background: #1e293b; padding: 12px; border-radius: 12px; }
-        .profile-avatar { width: 45px; height: 45px; background: #38bdf8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 20px; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 12px; border-radius: 12px; }
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #38bdf8; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #38bdf8; font-size: 20px; }
         .drawer-links { list-style: none; flex: 1; }
         .drawer-links li { margin-bottom: 12px; }
         .drawer-links a { color: #cbd5e1; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #1e293b; transition: all 0.2s; font-weight: 500; }
-        .drawer-links a:hover { background: #334155; color: #38bdf8; transform: translateX(4px); }
+        .drawer-links a:hover { background: #334155; color: #38bdf8; }
 
-        /* Tabs Bar */
         .tabs-bar { display: flex; background: #0f172a; border-bottom: 1px solid #1e293b; overflow-x: auto; scrollbar-width: none; }
         .tabs-bar::-webkit-scrollbar { display: none; }
         .tab-btn { flex: 1; padding: 14px 16px; background: none; border: none; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; white-space: nowrap; transition: all 0.2s; }
         .tab-btn.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; background: rgba(56, 189, 248, 0.05); }
 
-        /* Main Container & Cards */
         .main-container { max-width: 600px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
         .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         
-        /* Auth Screen */
+        .fb-profile-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; overflow: hidden; margin-bottom: 20px; position: relative; }
+        .cover-photo-container { width: 100%; height: 140px; background: linear-gradient(135deg, #1e293b, #0369a1); position: relative; background-size: cover; background-position: center; }
+        .edit-cover-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; backdrop-filter: blur(4px); }
+        .profile-avatar-container { position: relative; margin-top: -50px; margin-left: 20px; width: 90px; height: 90px; display: inline-block; }
+        .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #111827; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #38bdf8; }
+        .camera-badge { position: absolute; bottom: 2px; right: 2px; background: #38bdf8; color: #0f172a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #111827; cursor: pointer; }
+        .profile-info { padding: 15px 20px 20px; }
+        .profile-name { font-size: 20px; font-weight: bold; color: #f8fafc; margin-bottom: 4px; }
+        .profile-bio { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
+        .profile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #cbd5e1; border-top: 1px solid #1f2937; padding-top: 10px; margin-top: 10px; }
+
         #auth-screen { display: flex; justify-content: center; align-items: center; height: 80vh; }
         .auth-box { width: 100%; max-width: 400px; background: #111827; border: 1px solid #1f2937; padding: 30px; border-radius: 18px; box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
         .auth-box h2 { margin-bottom: 20px; color: #38bdf8; font-size: 24px; text-align: center; }
@@ -47,62 +53,56 @@
         .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
         .form-control { width: 100%; padding: 12px 14px; background: #090d16; border: 1px solid #374151; border-radius: 10px; color: white; font-size: 14px; outline: none; transition: border 0.2s; }
         .form-control:focus { border-color: #38bdf8; }
-        .btn { width: 100%; padding: 13px; background: #38bdf8; color: #0f172a; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s, transform 0.1s; }
-        .btn:active { transform: scale(0.98); }
+        .btn { width: 100%; padding: 13px; background: #38bdf8; color: #0f172a; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
         .btn:hover { background: #0ea5e9; }
         .btn-secondary { background: #374151; color: white; margin-top: 8px; }
-        .btn-secondary:hover { background: #4b5563; }
 
-        /* Modals */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
         .modal.active { display: flex; }
-        .modal-content { background: #111827; border: 1px solid #334155; width: 100%; max-width: 450px; border-radius: 18px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { background: #111827; border: 1px solid #334155; width: 100%; max-width: 450px; border-radius: 18px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 12px; }
         .modal-header h3 { color: #38bdf8; font-size: 18px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
 
-        /* Feed, Chat, Reels Styles */
         textarea.form-control { resize: vertical; min-height: 90px; }
         .post-item { background: #1f2937; padding: 16px; border-radius: 12px; margin-top: 14px; border: 1px solid #374151; }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .post-author { font-weight: bold; color: #38bdf8; font-size: 14px; }
-        .post-time { font-size: 11px; color: #94a3b8; }
+        .post-time { font-size: 11px; color: #94a3b8; margin-left: auto; }
         .post-content { font-size: 14px; color: #e2e8f0; line-height: 1.5; }
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
+        .file-upload-input { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- Drawer Overlay -->
-    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
+    <input type="file" id="avatar-file-input" class="file-upload-input" accept="image/*" onchange="uploadAvatarImage(event)">
+    <input type="file" id="cover-file-input" class="file-upload-input" accept="image/*" onchange="uploadCoverImage(event)">
 
-    <!-- Hamburger Menu Button -->
+    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
     <button id="hamburger-btn" onclick="toggleMenu()">☰</button>
 
-    <!-- Navigation Drawer -->
     <div id="nexus-drawer">
         <div class="drawer-header">
             <h3>NexusHub Menu</h3>
             <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">&times;</button>
         </div>
         <div class="profile-preview">
-            <div class="profile-avatar" id="drawer-avatar">U</div>
+            <div class="avatar-img" id="drawer-avatar-display">U</div>
             <div>
                 <div id="drawer-username" style="font-weight: bold; font-size: 15px; color: #f8fafc;">@user</div>
                 <div id="drawer-bio" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">NexusHub Member</div>
             </div>
         </div>
         <ul class="drawer-links">
-            <li><a href="#" onclick="toggleMenu(); openProfileModal();">👤 Edit Profile</a></li>
+            <li><a href="#" onclick="toggleMenu(); openProfileModal();">👤 Edit Profile & Photos</a></li>
             <li><a href="#" onclick="toggleMenu(); openSettingsModal();">⚙️ App Settings</a></li>
-            <li><a href="#" onclick="toggleMenu(); alert('NexusHub v2.5 PWA - Built for fast, reliable global connection.');">ℹ️ About NexusHub</a></li>
+            <li><a href="#" onclick="toggleMenu(); alert('NexusHub v3.0 - Full Social PWA');">ℹ️ About NexusHub</a></li>
             <li><a href="#" onclick="logout()" style="background: rgba(220, 38, 38, 0.15); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3);">🚪 Logout</a></li>
         </ul>
     </div>
 
-    <!-- Top App Bar -->
     <header>
         <div class="logo-area">
             <div class="logo-icon">N</div>
@@ -111,10 +111,9 @@
                 <div class="subtitle">NexusChat • NexusFeed • Reels • Wallet</div>
             </div>
         </div>
-        <div id="user-display" style="font-size: 13px; color: #38bdf8; font-weight: 600;"></div>
+        <div id="user-display" style="display: flex; align-items: center; gap: 8px;"></div>
     </header>
 
-    <!-- Auth Screen -->
     <div id="auth-screen" class="main-container">
         <div class="auth-box">
             <h2>Welcome to NexusHub</h2>
@@ -130,20 +129,18 @@
         </div>
     </div>
 
-    <!-- App Dashboard -->
     <div id="app-dashboard" class="hidden">
         <div class="tabs-bar">
             <button class="tab-btn active" onclick="switchTab('feed', event)">📰 Feed</button>
+            <button class="tab-btn" onclick="switchTab('profile', event)">👤 Profile</button>
             <button class="tab-btn" onclick="switchTab('chat', event)">💬 Chat</button>
-            <button class="tab-btn" onclick="switchTab('reels', event)">🎬 Reels</button>
             <button class="tab-btn" onclick="switchTab('wallet', event)">💰 Wallet</button>
         </div>
 
-        <!-- Feed Tab -->
         <div id="tab-feed" class="main-container tab-content">
             <div class="card">
                 <h3 style="margin-bottom: 12px; font-size: 16px;">Create Post</h3>
-                <textarea id="post-text" class="form-control" placeholder="What is happening in your world?"></textarea>
+                <textarea id="post-text" class="form-control" placeholder="What is on your mind?"></textarea>
                 <button class="btn" onclick="createPost()">Publish Post</button>
             </div>
             <div class="card">
@@ -152,7 +149,27 @@
             </div>
         </div>
 
-        <!-- Chat Tab -->
+        <div id="tab-profile" class="main-container tab-content hidden">
+            <div class="fb-profile-card">
+                <div class="cover-photo-container" id="profile-cover-display">
+                    <button class="edit-cover-btn" onclick="triggerCoverUpload()">📷 Edit Cover</button>
+                </div>
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar-lg" id="profile-avatar-display">U</div>
+                    <div class="camera-badge" onclick="triggerAvatarUpload()">📷</div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profile-card-name">@user</div>
+                    <div class="profile-bio" id="profile-card-bio">NexusHub Member</div>
+                    <button class="btn btn-secondary" style="margin-bottom: 10px;" onclick="openProfileModal()">✏️ Edit Profile Details</button>
+                    <div class="profile-details">
+                        <div id="profile-card-work">💼 Works at: NexusHub Creator Studio</div>
+                        <div id="profile-card-location">📍 Lives in: Nairobi, Kenya</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="tab-chat" class="main-container tab-content hidden">
             <div class="card" style="height: 450px; display: flex; flex-direction: column;">
                 <h3 style="margin-bottom: 12px; font-size: 16px; border-bottom: 1px solid #1f2937; padding-bottom: 8px;">NexusChat Global Room</h3>
@@ -164,16 +181,6 @@
             </div>
         </div>
 
-        <!-- Reels Tab -->
-        <div id="tab-reels" class="main-container tab-content hidden">
-            <div class="card" style="text-align: center; padding: 40px 20px;">
-                <h3 style="margin-bottom: 10px; color: #38bdf8; font-size: 20px;">NexusReels Studio</h3>
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">Create, share, and stream short video content with creators globally.</p>
-                <button class="btn" onclick="alert('Video creator studio ready! Select your video file.')">Upload Reel</button>
-            </div>
-        </div>
-
-        <!-- Wallet Tab -->
         <div id="tab-wallet" class="main-container tab-content hidden">
             <div class="card">
                 <h3 style="margin-bottom: 15px; color: #38bdf8;">NexusWallet Balance</h3>
@@ -186,12 +193,15 @@
         </div>
     </div>
 
-    <!-- Edit Profile Modal -->
     <div id="profile-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Edit Profile</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn" style="background:#1e293b; color:#38bdf8; margin-bottom: 8px;" onclick="triggerAvatarUpload()">📷 Change Profile Picture</button>
+                <button class="btn" style="background:#1e293b; color:#cbd5e1;" onclick="triggerCoverUpload()">🖼️ Change Cover Photo</button>
             </div>
             <div class="form-group">
                 <label>Display Username</label>
@@ -201,11 +211,18 @@
                 <label>Bio / Status</label>
                 <textarea id="edit-bio" class="form-control" placeholder="Tell the world about yourself..."></textarea>
             </div>
+            <div class="form-group">
+                <label>Work Place</label>
+                <input type="text" id="edit-work" class="form-control" placeholder="Where do you work?">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="edit-location" class="form-control" placeholder="City, Country">
+            </div>
             <button class="btn" onclick="saveProfile()">Save Changes</button>
         </div>
     </div>
 
-    <!-- App Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -218,17 +235,10 @@
                     <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #38bdf8;">
                 </label>
             </div>
-            <div style="margin-bottom: 20px; font-size: 14px; color: #cbd5e1;">
-                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                    <span>Dark Theme (Nexus OLED)</span>
-                    <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: #38bdf8;">
-                </label>
-            </div>
             <button class="btn" onclick="closeModals()">Done</button>
         </div>
     </div>
 
-    <!-- Wallet Modal -->
     <div id="wallet-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -243,21 +253,80 @@
     <script>
         let currentUser = localStorage.getItem('nexus_user') || '';
         let currentBio = localStorage.getItem('nexus_bio') || 'NexusHub Member';
+        let currentAvatar = localStorage.getItem('nexus_avatar') || '';
+        let currentCover = localStorage.getItem('nexus_cover') || '';
+        let currentWork = localStorage.getItem('nexus_work') || 'Works at: NexusHub Creator Studio';
+        let currentLocation = localStorage.getItem('nexus_location') || 'Lives in: Nairobi, Kenya';
 
         function checkAuth() {
             if (currentUser) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-dashboard').classList.remove('hidden');
-                document.getElementById('user-display').innerText = '@' + currentUser;
+                
                 document.getElementById('drawer-username').innerText = '@' + currentUser;
                 document.getElementById('drawer-bio').innerText = currentBio;
-                document.getElementById('drawer-avatar').innerText = currentUser.charAt(0).toUpperCase();
+                document.getElementById('profile-card-name').innerText = '@' + currentUser;
+                document.getElementById('profile-card-bio').innerText = currentBio;
+                document.getElementById('profile-card-work').innerText = '💼 ' + currentWork;
+                document.getElementById('profile-card-location').innerText = '📍 ' + currentLocation;
+
+                updateAvatarUI();
+                updateCoverUI();
                 loadPosts();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
                 document.getElementById('app-dashboard').classList.add('hidden');
-                document.getElementById('user-display').innerText = '';
             }
+        }
+
+        function updateAvatarUI() {
+            const drawerAvatar = document.getElementById('drawer-avatar-display');
+            const profileAvatar = document.getElementById('profile-avatar-display');
+            const headerDisplay = document.getElementById('user-display');
+
+            if (currentAvatar) {
+                drawerAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                profileAvatar.innerHTML = `<img src="${currentAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                headerDisplay.innerHTML = `<img src="${currentAvatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #38bdf8;"><span style="font-size:13px; color:#38bdf8; font-weight:600;">@${currentUser}</span>`;
+            } else {
+                drawerAvatar.innerText = currentUser.charAt(0).toUpperCase();
+                profileAvatar.innerText = currentUser.charAt(0).toUpperCase();
+                headerDisplay.innerHTML = `<span style="font-size:13px; color:#38bdf8; font-weight:600;">@${currentUser}</span>`;
+            }
+        }
+
+        function updateCoverUI() {
+            const coverDisplay = document.getElementById('profile-cover-display');
+            if (currentCover) {
+                coverDisplay.style.backgroundImage = `url('${currentCover}')`;
+            }
+        }
+
+        function triggerAvatarUpload() { document.getElementById('avatar-file-input').click(); }
+        function triggerCoverUpload() { document.getElementById('cover-file-input').click(); }
+
+        function uploadAvatarImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAvatar = e.target.result;
+                localStorage.setItem('nexus_avatar', currentAvatar);
+                updateAvatarUI();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadCoverImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentCover = e.target.result;
+                localStorage.setItem('nexus_cover', currentCover);
+                updateCoverUI();
+            };
+            reader.readAsDataURL(file);
         }
 
         function handleAuth() {
@@ -294,12 +363,12 @@
         function openProfileModal() {
             document.getElementById('edit-username').value = currentUser;
             document.getElementById('edit-bio').value = currentBio;
+            document.getElementById('edit-work').value = currentWork;
+            document.getElementById('edit-location').value = currentLocation;
             document.getElementById('profile-modal').classList.add('active');
         }
 
-        function openSettingsModal() {
-            document.getElementById('settings-modal').classList.add('active');
-        }
+        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
 
         function openWalletModal(action) {
             const title = action === 'send' ? 'Send Nexus Funds' : 'Receive QR Code';
@@ -309,18 +378,25 @@
             document.getElementById('wallet-modal').classList.add('active');
         }
 
-        function closeModals() {
-            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
 
         function saveProfile() {
             const newName = document.getElementById('edit-username').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
+            const newWork = document.getElementById('edit-work').value.trim();
+            const newLoc = document.getElementById('edit-location').value.trim();
+
             if (!newName) return alert('Username cannot be empty');
             currentUser = newName;
             currentBio = newBio || 'NexusHub Member';
+            currentWork = newWork || 'Works at: NexusHub Creator Studio';
+            currentLocation = newLoc || 'Lives in: Nairobi, Kenya';
+
             localStorage.setItem('nexus_user', currentUser);
             localStorage.setItem('nexus_bio', currentBio);
+            localStorage.setItem('nexus_work', currentWork);
+            localStorage.setItem('nexus_location', currentLocation);
+
             checkAuth();
             closeModals();
         }
@@ -331,8 +407,14 @@
             const container = document.getElementById('feed-container');
             const newPost = document.createElement('div');
             newPost.className = 'post-item';
+            
+            const avatarHtml = currentAvatar 
+                ? `<img src="${currentAvatar}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">` 
+                : `<div style="width:32px; height:32px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:bold;">${currentUser.charAt(0).toUpperCase()}</div>`;
+
             newPost.innerHTML = `
                 <div class="post-header">
+                    ${avatarHtml}
                     <span class="post-author">@${currentUser}</span>
                     <span class="post-time">Just now</span>
                 </div>
@@ -352,10 +434,11 @@
             container.innerHTML = `
                 <div class="post-item">
                     <div class="post-header">
+                        <div style="width:32px; height:32px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:bold;">N</div>
                         <span class="post-author">@nexus_admin</span>
                         <span class="post-time">2h ago</span>
                     </div>
-                    <div class="post-content">Welcome to NexusHub! Enjoy seamless connectivity, real-time messaging, and decentralized financial tools all in one super app.</div>
+                    <div class="post-content">Welcome to NexusHub! Upload your profile picture and cover photo to complete your profile.</div>
                 </div>
             `;
         }
