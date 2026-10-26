@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NexusHub - Social App</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 20px 12px 60px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #fe2c55, #25f4ee); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(254,44,85,0.3); }
+        h1 { font-size: 18px; font-weight: 700; color: #f8fafc; }
+        .subtitle { font-size: 11px; color: #94a3b8; }
+
+        #hamburger-btn { position: fixed; top: 12px; left: 15px; z-index: 1000; background: #1e293b; color: white; border: none; width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        #nexus-drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0f172a; z-index: 1001; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 25px rgba(0,0,0,0.8); padding: 25px; border-right: 1px solid #1e293b; display: flex; flex-direction: column; }
+        #nexus-drawer.open { left: 0; }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; backdrop-filter: blur(2px); }
+        .drawer-overlay.active { display: block; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 12px; border-radius: 12px; cursor: pointer; }
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fe2c55; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fe2c55; font-size: 20px; overflow: hidden; }
+        .drawer-links { list-style: none; flex: 1; }
+        .drawer-links li { margin-bottom: 12px; }
+        .drawer-links a { color: #cbd5e1; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #1e293b; transition: all 0.2s; font-weight: 500; cursor: pointer; }
+
+        .tabs-bar { display: flex; background: #0f172a; border-bottom: 1px solid #1e293b; overflow-x: auto; }
+        .tab-btn { flex: 1; padding: 14px 16px; background: none; border: none; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; }
+        .tab-btn.active { color: #fe2c55; border-bottom: 2px solid #fe2c55; background: rgba(254, 44, 85, 0.05); }
+
+        .main-container { max-width: 600px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
+        .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+        .social-post { background: #111827; border: 1px solid #1f2937; border-radius: 14px; margin-bottom: 16px; overflow: hidden; padding: 16px; }
+
+        .auth-toggle-bar { display: flex; background: #090d16; border-radius: 10px; padding: 4px; margin-bottom: 20px; border: 1px solid #374151; }
+        .auth-toggle-btn { flex: 1; padding: 10px; border: none; background: none; color: #94a3b8; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; }
+        .auth-toggle-btn.active { background: #fe2c55; color: white; }
+
+        #auth-screen { display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px 0; }
+        .auth-box { width: 100%; max-width: 400px; background: #111827; border: 1px solid #1f2937; padding: 30px; border-radius: 18px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px 14px; background: #090d16; border: 1px solid #374151; border-radius: 10px; color: white; font-size: 14px; outline: none; }
+        .btn { width: 100%; padding: 13px; background: #fe2c55; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
+    <button id="hamburger-btn" onclick="toggleMenu()">☰</button>
+
+    <div id="nexus-drawer">
+        <div class="drawer-header">
+            <h3>NexusHub Menu</h3>
+            <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="profile-preview" onclick="openDrawerTab('profile')">
+            <div class="avatar-img" id="drawer-avatar-display">U</div>
+            <div>
+                <div id="drawer-username" style="font-weight: bold; font-size: 15px; color: #f8fafc;">@user</div>
+                <div style="font-size: 12px; color: #94a3b8;">Cloud Profile</div>
+            </div>
+        </div>
+        <ul class="drawer-links">
+            <li><a onclick="openDrawerTab('profile')">👤 My Profile</a></li>
+            <li><a onclick="openDrawerTab('wallet')">💰 Creator Wallet</a></li>
+            <li><a onclick="logout()" style="color: #ef4444;">🚪 Logout</a></li>
+        </ul>
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">N</div>
+            <div>
+                <h1>NexusHub</h1>
+                <div class="subtitle">Cloud Social Feed • Live Chat</div>
+            </div>
+        </div>
+    </header>
+
+    <div id="auth-screen" class="main-container">
+        <div class="auth-box">
+            <h2 style="margin-bottom:15px; color:#fe2c55; text-align:center;">Welcome to NexusHub</h2>
+            
+            <div class="auth-toggle-bar">
+                <button class="auth-toggle-btn active" id="btn-mode-login" onclick="setAuthMode('login')">Log In</button>
+                <button class="auth-toggle-btn" id="btn-mode-signup" onclick="setAuthMode('signup')">Create Account</button>
+            </div>
+
+            <div class="form-group">
+                <label>Username / Email</label>
+                <input type="text" id="auth-username" class="form-control" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="Enter password">
+            </div>
+            <button class="btn" id="auth-submit-btn" onclick="handleAuth()">Log In</button>
+        </div>
+    </div>
+
+    <div id="app-dashboard" class="hidden">
+        <div class="tabs-bar">
+            <button class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed', event)">📰 Feed</button>
+            <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">💬 Chat</button>
+        </div>
+
+        <div id="tab-feed" class="main-container tab-content">
+            <div class="card">
+                <textarea id="post-text" class="form-control" placeholder="What's on your mind?"></textarea>
+                <button class="btn" onclick="createPost()">Post to Cloud</button>
+            </div>
+            <div id="feed-container"></div>
+        </div>
+
+        <div id="tab-chat" class="main-container tab-content hidden">
+            <div class="card" style="height: 400px; display: flex; flex-direction: column;">
+                <h3>NexusChat Global Room</h3>
+                <div id="chat-messages" style="flex: 1; overflow-y: auto; background: #090d16; padding: 12px; border-radius: 10px; margin: 10px 0;"></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="chat-input" class="form-control" placeholder="Type a message...">
+                    <button class="btn" style="width: 90px; margin-top: 0;" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="main-container tab-content hidden">
+            <div class="card">
+                <h2>My Profile</h2>
+                <p id="profile-card-name" style="color:#94a3b8; margin-top:10px;">@user</p>
+            </div>
+        </div>
+
+        <div id="tab-wallet" class="main-container tab-content hidden">
+            <div class="card">
+                <h2>Creator Wallet</h2>
+                <div style="font-size:32px; font-weight:bold; margin:15px 0;">$0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase with your project keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyAl31az75VldLMtNtmyVjZ_mPc2AxnMrOU",
+            authDomain: "nexushub-a7363.firebaseapp.com",
+            projectId: "nexushub-a7363",
+            storageBucket: "nexushub-a7363.firebasestorage.app",
+            messagingSenderId: "1046491349208",
+            appId: "1:1046491349208:web:19ad80a34bfc2f4bae97ad"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentAuthMode = 'login';
+        let currentUser = localStorage.getItem('nexus_user') || '';
+
+        function setAuthMode(mode) {
+            currentAuthMode = mode;
+            document.getElementById('btn-mode-login').classList.toggle('active', mode === 'login');
+            document.getElementById('btn-mode-signup').classList.toggle('active', mode === 'signup');
+            document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Log In' : 'Create Account';
+        }
+
+        function checkAuth() {
+            if (currentUser) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-dashboard').classList.remove('hidden');
+                document.getElementById('drawer-username').innerText = '@' + currentUser;
+                document.getElementById('profile-card-name').innerText = '@' + currentUser;
+                document.getElementById('drawer-avatar-display').innerText = currentUser.charAt(0).toUpperCase();
+                loadCloudFeed();
+                loadCloudChat();
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-dashboard').classList.add('hidden');
+            }
+        }
+
+        function handleAuth() {
+            const username = document.getElementById('auth-username').value.trim();
+            if (!username) return alert('Please enter a username.');
+            currentUser = username;
+            localStorage.setItem('nexus_user', currentUser);
+            checkAuth();
+        }
+
+        function logout() {
+            localStorage.removeItem('nexus_user');
+            currentUser = '';
+            toggleMenu();
+            checkAuth();
+        }
+
+        function toggleMenu() {
+            document.getElementById('nexus-drawer').classList.toggle('open');
+            document.getElementById('drawer-overlay').classList.toggle('active');
+        }
+
+        function switchTab(tabName, event) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+        }
+
+        function openDrawerTab(tabName) {
+            toggleMenu();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+        }
+
+        // --- Cloud Firestore Functions ---
+        function createPost() {
+            const text = document.getElementById('post-text').value.trim();
+            if (!text) return alert('Write something first!');
+
+            db.collection("posts").add({
+                author: currentUser,
+                text: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('post-text').value = '';
+            }).catch(err => alert("Error posting: " + err.message));
+        }
+
+        function loadCloudFeed() {
+            db.collection("posts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                const container = document.getElementById('feed-container');
+                container.innerHTML = snapshot.empty ? '<div style="text-align:center; padding:20px; color:#64748b;">No posts in cloud yet.</div>' : '';
+                snapshot.forEach(doc => {
+                    const p = doc.data();
+                    container.innerHTML += `<div class="social-post"><b>@${p.author || 'Anonymous'}</b><p style="margin:8px 0;">${p.text}</p></div>`;
+                });
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if (!val) return;
+
+            db.collection("chats").add({
+                author: currentUser,
+                text: val,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                input.value = '';
+            });
+        }
+
+        function loadCloudChat() {
+            db.collection("chats").orderBy("createdAt", "asc").onSnapshot(snapshot => {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const m = doc.data();
+                    chatBox.innerHTML += `<div style="margin-bottom:6px;"><b>@${m.author}:</b> ${m.text}</div>`;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
