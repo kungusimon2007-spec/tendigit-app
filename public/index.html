@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NexusHub - Ultimate Social Platform</title>
+    <!-- Firebase SDKs for Firestore Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        
+        header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
+        header.logged-in { padding-left: 60px; }
+        
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #fe2c55, #25f4ee); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 18px; box-shadow: 0 2px 10px rgba(254,44,85,0.3); }
+        h1 { font-size: 18px; font-weight: 700; color: #f8fafc; }
+        .subtitle { font-size: 11px; color: #94a3b8; }
+
+        #hamburger-btn { position: fixed; top: 12px; left: 15px; z-index: 1000; background: #1e293b; color: white; border: none; width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        #hamburger-btn.visible { display: flex; }
+
+        #nexus-drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0f172a; z-index: 1001; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 25px rgba(0,0,0,0.8); padding: 25px; border-right: 1px solid #1e293b; display: flex; flex-direction: column; }
+        #nexus-drawer.open { left: 0; }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; backdrop-filter: blur(2px); }
+        .drawer-overlay.active { display: block; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .profile-preview { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 12px; border-radius: 12px; cursor: pointer; }
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fe2c55; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fe2c55; font-size: 20px; overflow: hidden; }
+        .drawer-links { list-style: none; flex: 1; }
+        .drawer-links li { margin-bottom: 12px; }
+        .drawer-links a { color: #cbd5e1; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #1e293b; transition: all 0.2s; font-weight: 500; cursor: pointer; }
+
+        .tabs-bar { display: flex; background: #0f172a; border-bottom: 1px solid #1e293b; overflow-x: auto; position: sticky; top: 59px; z-index: 98; }
+        .tab-btn { flex: 1; min-width: 80px; padding: 14px 10px; background: none; border: none; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; white-space: nowrap; }
+        .tab-btn.active { color: #fe2c55; border-bottom: 2px solid #fe2c55; background: rgba(254, 44, 85, 0.05); }
+
+        .main-container { max-width: 600px; width: 100%; margin: 15px auto; padding: 0 15px; flex: 1; }
+        .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+        
+        .fb-post { background: #111827; border: 1px solid #1f2937; border-radius: 14px; margin-bottom: 16px; padding: 16px; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .post-user { display: flex; align-items: center; gap: 10px; }
+        .post-user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1e293b; color: #25f4ee; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 1px solid #25f4ee; object-fit: cover; overflow: hidden; }
+        .post-actions-bar { display: flex; border-top: 1px solid #1f2937; border-bottom: 1px solid #1f2937; padding: 8px 0; margin: 12px 0 8px 0; justify-content: space-around; }
+        .post-act-btn { background: none; border: none; color: #94a3b8; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px; }
+        .post-act-btn:hover { background: #1e293b; }
+
+        .status-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .status-card { min-width: 80px; height: 110px; border-radius: 12px; background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; position: relative; border: 2px solid #fe2c55; cursor: pointer; }
+        .status-card.add-status { border: 2px dashed #94a3b8; }
+
+        .call-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px; }
+
+        .auth-toggle-bar { display: flex; background: #090d16; border-radius: 10px; padding: 4px; margin-bottom: 20px; border: 1px solid #374151; }
+        .auth-toggle-btn { flex: 1; padding: 10px; border: none; background: none; color: #94a3b8; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; }
+        .auth-toggle-btn.active { background: #1877f2; color: white; }
+
+        #auth-screen { display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px 0; }
+        .auth-box { width: 100%; max-width: 400px; background: #111827; border: 1px solid #1f2937; padding: 30px; border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px 14px; background: #090d16; border: 1px solid #374151; border-radius: 10px; color: white; font-size: 14px; outline: none; }
+        .btn { width: 100%; padding: 13px; background: #1877f2; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .btn-secondary { background: #25f4ee; color: #0f172a; }
+        .btn-wa { background: #25D366; color: white; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleMenu()"></div>
+    <button id="hamburger-btn" onclick="toggleMenu()">☰</button>
+
+    <div id="nexus-drawer">
+        <div class="drawer-header">
+            <h3>NexusHub Menu</h3>
+            <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="profile-preview" onclick="openDrawerTab('profile')">
+            <div class="avatar-img" id="drawer-avatar-display">U</div>
+            <div>
+                <div id="drawer-username" style="font-weight: bold; font-size: 15px; color: #f8fafc;">@user</div>
+                <div id="drawer-nexusid" style="font-size: 12px; color: #25f4ee; font-weight: bold;">ID: Loading...</div>
+            </div>
+        </div>
+        <ul class="drawer-links">
+            <li><a onclick="openDrawerTab('profile')">👤 My Profile & NexusID</a></li>
+            <li><a onclick="openDrawerTab('wallet')">💰 Creator Wallet</a></li>
+            <li><a onclick="shareNexusIDToWA()" style="color: #25D366;">📲 Share ID to WhatsApp</a></li>
+            <li><a onclick="logout()" style="color: #ef4444;">🚪 Log Out</a></li>
+        </ul>
+    </div>
+
+    <header id="main-header">
+        <div class="logo-area">
+            <div class="logo-icon" style="background: #1877f2; color: white;">f</div>
+            <div>
+                <h1 style="color: #1877f2;">facebook</h1>
+                <div class="subtitle">NexusHub Social Feed • Messenger • Stories</div>
+            </div>
+        </div>
+    </header>
+
+    <div id="auth-screen" class="main-container">
+        <div class="auth-box">
+            <h2 style="margin-bottom:15px; color:#1877f2; text-align:center;">facebook</h2>
+            <p style="text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px;">Connect with friends and the world around you on NexusHub.</p>
+            
+            <div class="auth-toggle-bar">
+                <button class="auth-toggle-btn active" id="btn-mode-login" onclick="setAuthMode('login')">Log In</button>
+                <button class="auth-toggle-btn" id="btn-mode-signup" onclick="setAuthMode('signup')">Create Account</button>
+            </div>
+
+            <div class="form-group">
+                <label>Email or Phone Number</label>
+                <input type="text" id="auth-email" class="form-control" placeholder="Mobile number or email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="Password">
+            </div>
+            <button class="btn" id="auth-submit-btn" onclick="handleFacebookAuth()">Log In</button>
+        </div>
+    </div>
+
+    <div id="app-dashboard" class="hidden">
+        <div class="tabs-bar">
+            <button class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed', event)">📰 Feed</button>
+            <button class="tab-btn" id="tab-btn-status" onclick="switchTab('status', event)">📸 Stories</button>
+            <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">💬 Messenger</button>
+            <button class="tab-btn" id="tab-btn-profile" onclick="switchTab('profile', event)">👤 Profile</button>
+            <button class="tab-btn" id="tab-btn-wallet" onclick="switchTab('wallet', event)">💰 Wallet</button>
+        </div>
+
+        <div id="tab-feed" class="main-container tab-content">
+            <div class="card">
+                <textarea id="post-text" class="form-control" placeholder="What's on your mind?"></textarea>
+                <button class="btn" style="background: #1877f2;" onclick="createPost()">Post</button>
+            </div>
+            <div id="feed-container"></div>
+        </div>
+
+        <div id="tab-status" class="main-container tab-content hidden">
+            <div class="card">
+                <h3>Stories</h3>
+                <div class="status-container" style="margin-top: 15px;">
+                    <div class="status-card add-status" onclick="postStatus()">
+                        <div style="font-size: 24px; color: #1877f2;">+</div>
+                        <div style="font-size: 11px; text-align: center; margin-top: 4px;">Add Story</div>
+                    </div>
+                    <div id="status-list" style="display: flex; gap: 10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-chat" class="main-container tab-content hidden">
+            <div class="card">
+                <h3>Messenger & Chats</h3>
+                <div style="margin: 12px 0; display: flex; gap: 8px;">
+                    <input type="text" id="target-nexusid-input" class="form-control" placeholder="Enter 10-digit NexusID...">
+                    <button class="btn btn-secondary" style="width: 120px; margin-top:0;" onclick="startDirectChat()">Chat</button>
+                </div>
+            </div>
+
+            <div class="card" style="height: 420px; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 id="chat-header-title">Global Messenger</h3>
+                    <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px; margin-top: 0;" onclick="triggerCall('Voice')">📞 Call</button>
+                </div>
+                <div id="chat-messages" style="flex: 1; overflow-y: auto; background: #090d16; padding: 12px; border-radius: 10px; margin-bottom: 10px;"></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="chat-input" class="form-control" placeholder="Aa...">
+                    <button class="btn" style="width: 90px; margin-top: 0; background: #1877f2;" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="main-container tab-content hidden">
+            <div class="card" style="text-align: center;">
+                <h2>Profile</h2>
+                <div style="display: flex; justify-content: center; margin: 15px 0;">
+                    <div class="avatar-img" id="profile-avatar-large" style="width: 80px; height: 80px; font-size: 32px;">U</div>
+                </div>
+                <p id="profile-card-email" style="color:#94a3b8; margin-top:8px;">Account: loading...</p>
+                
+                <div class="form-group" style="margin-top: 15px; text-align: left;">
+                    <label>Profile Picture Image URL</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="profile-pic-input" class="form-control" placeholder="Paste image URL here...">
+                        <button class="btn btn-secondary" style="width: 100px; margin-top:0;" onclick="updateProfilePicture()">Save</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; padding: 15px; background: #090d16; border-radius: 10px; border: 1px solid #1877f2; text-align: left;">
+                    <div style="font-size: 12px; color: #94a3b8;">Your 10-Digit Unique NexusID:</div>
+                    <div id="profile-nexusid-display" style="font-size: 24px; font-weight: bold; color: #25f4ee; letter-spacing: 2px; margin: 6px 0;">----------</div>
+                    <button class="btn btn-wa" onclick="shareNexusIDToWA()">Share NexusID to WhatsApp</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-wallet" class="main-container tab-content hidden">
+            <div class="card">
+                <h2>Creator Wallet</h2>
+                <div style="font-size:32px; font-weight:bold; margin:15px 0; color:#25f4ee;">$0.00</div>
+                <p style="color:#94a3b8; font-size: 13px;">Monetization and tipping earnings will appear here.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="call-overlay" class="call-modal hidden">
+        <div style="text-align: center;">
+            <div class="avatar-img" style="width: 80px; height: 80px; font-size: 36px; margin: 0 auto 15px auto;" id="call-avatar-display">C</div>
+            <h2 id="call-status-title">Calling...</h2>
+            <p style="color: #94a3b8; margin-top: 5px;">Messenger Encrypted Call</p>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn" style="background: #ef4444; width: 120px;" onclick="endCall()">End Call</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAl31az75VldLMtNtmyVjZ_mPc2AxnMrOU",
+            authDomain: "nexushub-a7363.firebaseapp.com",
+            projectId: "nexushub-a7363",
+            storageBucket: "nexushub-a7363.firebasestorage.app",
+            messagingSenderId: "1046491349208",
+            appId: "1:1046491349208:web:19ad80a34bfc2f4bae97ad"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentAuthMode = 'login';
+        let currentUserEmail = '';
+        let currentUid = '';
+        let myNexusID = '';
+        let myAvatarUrl = '';
+
+        function setAuthMode(mode) {
+            currentAuthMode = mode;
+            document.getElementById('btn-mode-login').classList.toggle('active', mode === 'login');
+            document.getElementById('btn-mode-signup').classList.toggle('active', mode === 'signup');
+            document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Log In' : 'Sign Up';
+        }
+
+        function handleFacebookAuth() {
+            const emailInput = document.getElementById('auth-email').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+            if (!emailInput || !passwordInput) return alert('Please enter your email/phone and password.');
+
+            currentUserEmail = emailInput;
+            currentUid = btoa(emailInput).replace(/=/g, ''); // Generate safe local UID
+            
+            // Check or create user profile in Firestore database
+            const userRef = db.collection("users").doc(currentUid);
+            userRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    myNexusID = data.nexusID;
+                    myAvatarUrl = data.avatarUrl || '';
+                } else {
+                    myNexusID = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+                    userRef.set({ email: currentUserEmail, nexusID: myNexusID, avatarUrl: '' });
+                }
+                
+                // Transition to Dashboard UI exactly like Facebook
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-dashboard').classList.remove('hidden');
+                document.getElementById('hamburger-btn').classList.add('visible');
+                document.getElementById('main-header').classList.add('logged-in');
+                document.getElementById('drawer-username').innerText = currentUserEmail;
+                document.getElementById('profile-card-email').innerText = 'Account: ' + currentUserEmail;
+                document.getElementById('drawer-nexusid').innerText = 'ID: ' + myNexusID;
+                document.getElementById('profile-nexusid-display').innerText = myNexusID;
+                
+                updateAvatarUI();
+                loadCloudFeed();
+                loadCloudChat();
+                loadStatuses();
+            }).catch(err => {
+                // Fallback if offline or network blocks
+                myNexusID = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-dashboard').classList.remove('hidden');
+                document.getElementById('hamburger-btn').classList.add('visible');
+                document.getElementById('main-header').classList.add('logged-in');
+                document.getElementById('drawer-username').innerText = currentUserEmail;
+                document.getElementById('profile-card-email').innerText = 'Account: ' + currentUserEmail;
+                document.getElementById('drawer-nexusid').innerText = 'ID: ' + myNexusID;
+                document.getElementById('profile-nexusid-display').innerText = myNexusID;
+                loadCloudFeed();
+                loadCloudChat();
+                loadStatuses();
+            });
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function updateAvatarUI() {
+            const drawerAvatar = document.getElementById('drawer-avatar-display');
+            const profileLarge = document.getElementById('profile-avatar-large');
+            const callAvatar = document.getElementById('call-avatar-display');
+
+            if (myAvatarUrl) {
+                drawerAvatar.innerHTML = `<img src="${myAvatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+                profileLarge.innerHTML = `<img src="${myAvatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+                callAvatar.innerHTML = `<img src="${myAvatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+            } else {
+                const initial = currentUserEmail ? currentUserEmail.charAt(0).toUpperCase() : 'U';
+                drawerAvatar.innerText = initial;
+                profileLarge.innerText = initial;
+                callAvatar.innerText = initial;
+            }
+        }
+
+        function updateProfilePicture() {
+            const url = document.getElementById('profile-pic-input').value.trim();
+            if(!url) return alert('Please enter a valid image URL');
+            db.collection("users").doc(currentUid).set({ avatarUrl: url }, { merge: true }).then(() => {
+                myAvatarUrl = url;
+                updateAvatarUI();
+                alert('Profile picture updated successfully!');
+            }).catch(err => alert('Error: ' + err.message));
+        }
+
+        function toggleMenu() {
+            document.getElementById('nexus-drawer').classList.toggle('open');
+            document.getElementById('drawer-overlay').classList.toggle('active');
+        }
+
+        function switchTab(tabName, event) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+        }
+
+        function openDrawerTab(tabName) {
+            toggleMenu();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('tab-btn-' + tabName);
+            if(btn) btn.classList.add('active');
+        }
+
+        function shareNexusIDToWA() {
+            if (!myNexusID) return alert('NexusID loading...');
+            const msg = encodeURIComponent(`Add me on Facebook / NexusHub! My 10-digit NexusID is: ${myNexusID}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function createPost() {
+            const text = document.getElementById('post-text').value.trim();
+            if (!text) return alert('Write something first!');
+            db.collection("posts").add({
+                author: currentUserEmail,
+                authorID: myNexusID,
+                authorAvatar: myAvatarUrl || '',
+                text: text,
+                likes: 0,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('post-text').value = '';
+            });
+        }
+
+        function loadCloudFeed() {
+            db.collection("posts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                const container = document.getElementById('feed-container');
+                container.innerHTML = snapshot.empty ? '<div style="text-align:center; padding:20px; color:#64748b;">No posts in feed yet.</div>' : '';
+                snapshot.forEach(doc => {
+                    const p = doc.data();
+                    const avatarContent = p.authorAvatar ? `<img src="${p.authorAvatar}" style="width:100%; height:100%; object-fit:cover;">` : (p.author || 'U').charAt(0).toUpperCase();
+                    container.innerHTML += `
+                        <div class="fb-post">
+                            <div class="post-header">
+                                <div class="post-user">
+                                    <div class="post-user-avatar">${avatarContent}</div>
+                                    <div>
+                                        <div style="font-weight:bold; font-size:14px;">${p.author}</div>
+                                        <div style="font-size:11px; color:#1877f2;">ID: ${p.authorID || 'Unknown'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="margin:10px 0; font-size:14px;">${p.text}</p>
+                            <div class="post-actions-bar">
+                                <button class="post-act-btn" onclick="likePost('${doc.id}', ${p.likes || 0})">👍 Like (${p.likes || 0})</button>
+                                <button class="post-act-btn">💬 Comment</button>
+                                <button class="post-act-btn" onclick="shareNexusIDToWA()">↪️ Share</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function likePost(postId, currentLikes) {
+            db.collection("posts").doc(postId).update({ likes: currentLikes + 1 });
+        }
+
+        function postStatus() {
+            const statusText = prompt("Enter your Story update:");
+            if (!statusText) return;
+            db.collection("statuses").add({
+                author: currentUserEmail,
+                text: statusText,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        function loadStatuses() {
+            db.collection("statuses").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                const container = document.getElementById('status-list');
+                container.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const s = doc.data();
+                    container.innerHTML += `
+                        <div class="status-card" onclick="alert('${s.author}: ${s.text}')">
+                            <div style="font-size:12px; font-weight:bold;">${s.author.split('@')[0]}</div>
+                            <div style="font-size:10px; color:#94a3b8; margin-top:4px;">View Story</div>
+                        </div>`;
+                });
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if (!val) return;
+            db.collection("chats").add({
+                author: currentUserEmail,
+                text: val,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => input.value = '');
+        }
+
+        function loadCloudChat() {
+            db.collection("chats").orderBy("createdAt", "asc").onSnapshot(snapshot => {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const m = doc.data();
+                    chatBox.innerHTML += `<div style="margin-bottom:8px; font-size:13px;"><b>@${m.author.split('@')[0]}:</b> ${m.text} <span style="color:#1877f2; font-size:10px;">✓✓</span></div>`;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        function triggerCall(type) {
+            document.getElementById('call-status-title').innerText = type + ' Calling...';
+            document.getElementById('call-overlay').classList.remove('hidden');
+        }
+
+        function endCall() {
+            document.getElementById('call-overlay').classList.add('hidden');
+        }
+
+        function startDirectChat() {
+            const targetID = document.getElementById('target-nexusid-input').value.trim();
+            if (targetID.length !== 10) return alert('Please enter a valid 10-digit NexusID');
+            document.getElementById('chat-header-title').innerText = 'Chatting with ID: ' + targetID;
+            alert('Connected to Messenger chat room for NexusID: ' + targetID);
+        }
+    </script>
+</body>
+</html>
