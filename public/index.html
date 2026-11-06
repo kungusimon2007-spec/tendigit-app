@@ -260,3 +260,14 @@ if (typeof window.handleNexusAuth === 'undefined') {
     };
 }
 </script>
+
+<script>
+window.setAuthMode = window.setAuthMode || function(mode) {
+    console.log("Switching auth mode to:", mode);
+};
+
+window.handleNexusAuth = window.handleNexusAuth || function(event) {
+    if (event) event.preventDefault();
+    console.log("Handling auth submit...");
+};
+</script>
